@@ -1,0 +1,16 @@
+{% extends 'single_column.html.twig' %}
+
+{% block before_title %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {{ buttons.add_row(path('app_permissions_studyarea')) }}
+{% endblock %}
+
+{% block title %}
+  {{ 'permissions.add-permissions'|trans }}
+{% endblock %}
+
+{% block content %}
+  <p>{{ 'permissions.add-permissions-text'|trans }}</p>
+
+  {{ form(form) }}
+{% endblock %}

@@ -1,0 +1,34 @@
+{% extends 'single_column.html.twig' %}
+
+{% block title %}
+  {{ 'review.submit-title'|trans }}
+{% endblock %}
+
+{% block content %}
+  {% if pendingChanges|length == 0 %}
+    <p>{{ 'review.nothing-to-submit'|trans }}</p>
+  {% else %}
+    <p>
+      {{ 'review.submit-text'|trans }}
+      <a href="#" id="pc" data-toggle-value="false">{{ 'review.submit-text-toggle'|trans }}</a>
+    </p>
+
+    {{ block('pending_changes') }}
+  {% endif %}
+{% endblock %}
+
+{% block pending_changes %}
+  {{ form(form) }}
+{% endblock %}
+
+{% block javascripts_bottom %}
+  <script type="text/javascript">
+    $(function () {
+      $('#pc').on('click', function () {
+        var $pcUrl = $('#pc');
+        $('.change-input').prop('checked', !$pcUrl.data('toggle-value'));
+        $pcUrl.data('toggle-value', !$pcUrl.data('toggle-value'));
+      });
+    });
+  </script>
+{% endblock %}

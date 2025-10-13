@@ -1,0 +1,56 @@
+{% extends 'single_column.html.twig' %}
+
+{% block before_title %}
+  {% if is_granted('STUDYAREA_EDIT', studyArea) %}
+    {% import '_macro/_action_buttons.html.twig' as buttons %}
+    {{ buttons.header() }}
+    {{ buttons.add_button(path('app_learningpath_add'), _twigStudyArea.isFrozen ? 'study-area.frozen'|trans : '') }}
+    {{ buttons.footer() }}
+  {% endif %}
+{% endblock %}
+
+{% block title %}
+  {{ 'learning-path.list-title'|trans }}
+{% endblock %}
+
+{% block content %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  <table id="learning-path-table" class="table table-hover table-datatable table-bordered">
+    <thead>
+    <tr>
+      <th scope="col">{{ 'learning-path.name'|trans }}<i class="sort"></i></th>
+      <th scope="col">{{ 'learning-path.open'|trans }}<i class="sort"></i></th>
+      <th scope="col" class="actions">{{ 'form.actions'|trans }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for learning_path in learningPaths %}
+      <tr>
+        <td>{{ learning_path.name }}</td>
+        <td>
+          <a href="#" class="btn btn-outline-primary"
+             onclick="eDispatch.openLearningPathBrowser({{- learning_path.id -}})">
+            <i class="fa fa-fw fa-road"></i> {{ 'learning-path.open'|trans }}
+          </a>
+        </td>
+        <td class="actions">
+          {% if is_granted('STUDYAREA_PRINT', learning_path.studyArea) %}
+            {{ buttons.print_button(path('app_print_printlearningpath', {learningPath: learning_path.id})) }}
+          {% endif %}
+          {{ buttons.show_button(path('app_learningpath_show', {learningPath: learning_path.id})) }}
+          {% if is_granted('STUDYAREA_EDIT', studyArea) %}
+            {{ buttons.edit_button_disabled_when_frozen(path('app_learningpath_edit', {learningPath: learning_path.id})) }}
+            {{ buttons.remove_button_disabled_when_frozen(path('app_learningpath_remove', {learningPath: learning_path.id})) }}
+          {% endif %}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block javascripts_bottom %}
+  {{ dataTable('learning-path-table', {
+    columnDefs: [{searchable: false, orderable: false, targets: -1}],
+  }) }}
+{% endblock %}

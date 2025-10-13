@@ -1,0 +1,212 @@
+{% extends 'single_column.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style type="text/css">
+    .toggle-permission:not(.viewer) {
+      cursor: pointer;
+    }
+  </style>
+{% endblock %}
+
+{% block title %}
+  {{ 'permissions.study-area-title'|trans }}
+{% endblock %}
+
+{% block before_title %}
+  {% if studyArea.accessType != constant('App\\Entity\\StudyArea::ACCESS_PRIVATE') %}
+    {% import '_macro/_action_buttons.html.twig' as buttons %}
+    {{ buttons.header() }}
+    {{ buttons.add_button(path('app_permissions_addpermissions')) }}
+    {{ buttons.remove_button(path('app_permissions_removeallpermissions'), false, 'permissions.remove-all-permissions') }}
+    {{ buttons.footer() }}
+  {% endif %}
+{% endblock %}
+
+{% macro type_header_cell(type) %}
+  <th scope="col" class="text-center">
+    {{ ('permissions.type.' ~ type)|trans }} <i class="sort"></i>
+    <br/>
+  </th>
+{% endmacro %}
+
+{% macro type_footer_cell(type) %}
+  <td scope="col" class="text-center">
+    {% import '_macro/_action_buttons.html.twig' as buttons %}
+    {{ buttons.remove_button(path('app_permissions_removeallpermissionsfortype', {groupType: type}), false, 'permissions.revoke-type'|trans) }}
+  </td>
+{% endmacro %}
+
+{% macro has_permission(user_permission, type) %}
+  {% set value = attribute(user_permission, type) %}
+  <td data-sort="{{ value ? 0 : 1 }}" class="text-center">
+    <div class="toggle-permission {{ type }}"
+         data-group-type="{{ type }}"
+         data-user="{{ user_permission.user.id|default('') }}"
+         data-email="{{ user_permission.email.email|default('') }}">
+      <i class="fa fa-fw fa-check text-success" {% if not value %}style="display: none"{% endif %}></i>
+      <i class="fa fa-fw fa-times text-danger" {% if value %}style="display: none"{% endif %}></i>
+      <i class="fa fa-fw fa-circle-o-notch fa-spin" style="display: none"></i>
+    </div>
+  </td>
+{% endmacro %}
+
+{% block content %}
+  {% if studyArea.accessType == constant('App\\Entity\\StudyArea::ACCESS_PRIVATE') %}
+    {{ 'permissions.study-area-not-group-or-public'|trans({'%item%': studyArea.name}) }}
+    <a href="{{ path('app_studyarea_edit', {studyArea: studyArea.id, permissions: true}) }}">
+      {{ 'permissions.change-now'|trans }}.
+    </a>
+  {% else %}
+
+    <p>{{ 'permissions.info-text'|trans }}</p>
+    {% from _self import type_header_cell, type_footer_cell, has_permission %}
+    {% import '_macro/_action_buttons.html.twig' as buttons %}
+
+    <div class="table-responsive">
+      <table id="permissions-table" class="table table-sm table-hover table-datatable table-bordered">
+        <thead>
+        <tr>
+          <th scope="col">{{ 'user.display-name'|trans }}<i class="sort"></i></th>
+          <th scope="col">{{ 'user.emailaddress'|trans }}<i class="sort"></i></th>
+          {% for type in studyArea.availableUserGroupTypes %}
+            {{ type_header_cell(type) }}
+          {% endfor %}
+          <th scope="col" class="actions">{{ 'form.revoke'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for user_permission in studyArea.userPermissions %}
+          <tr>
+            <td>{{ user_permission.displayName }}</td>
+            <td>{{ user_permission.userIdentifier }}</td>
+            {% for type in studyArea.availableUserGroupTypes %}
+              {{ has_permission(user_permission, type) }}
+            {% endfor %}
+            <td class="actions">
+              {% if user_permission.user %}
+                {{ buttons.remove_button(path('app_permissions_removepermissions', {user: user_permission.user.id}), false, 'permissions.revoke-user'|trans) }}
+              {% else %}
+                {{ buttons.remove_button(path('app_permissions_removeemailpermissions', {email: user_permission.email.email|url_encode}), false, 'permissions.revoke-user'|trans) }}
+              {% endif %}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+        <tfoot>
+        <tr>
+          <th></th>
+          <th></th>
+          {% for type in studyArea.availableUserGroupTypes %}
+            {{ type_footer_cell(type) }}
+          {% endfor %}
+          <th></th>
+        </tr>
+        </tfoot>
+      </table>
+    </div>
+  {% endif %}
+
+  <div class="modal fade" id="error-modal" tabindex="-1" role="dialog" aria-labelledby="error-modal"
+       aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-body">{{ 'exception.error-text'|trans }}</div>
+        <div class="modal-footer">
+          <button type="button" data-dismiss="modal" class="btn btn-outline-primary">
+            {{ 'general.close'|trans }}
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
+{% block javascripts_bottom %}
+  {{ dataTable('permissions-table', {
+    columnDefs: [{searchable: false, orderable: false, targets: -1}],
+  }) }}
+  <script type="text/javascript">
+    $dataTable.on('search.dt', function () {
+      var term = $dataTable.search();
+      if (term === '') {
+        $($dataTable.table().footer()).show();
+      } else {
+        $($dataTable.table().footer()).hide();
+      }
+    });
+
+    $('#permissions-table').on('click', '.toggle-permission:not(.viewer)', function() {
+      var $el = $(this);
+      var $td = $el.parent();
+
+      // Check for current loading
+      if ($el.data('busy')) {
+        return;
+      }
+      $el.data('busy', true);
+
+      $el.find('.fa').hide();
+      $el.find('.fa-spin').show();
+
+      var sortValue = $td.data('sort');
+      var actualValue = !sortValue;
+
+      var user = $el.data('user');
+      var email = $el.data('email');
+      var groupType = $el.data('group-type');
+
+      var path;
+      if (user !== '') {
+        path = Routing.generate('app_permissions_updatepermission', {
+          _studyArea: currentStudyArea,
+          groupType: groupType,
+          user: user
+        });
+      } else {
+        path = Routing.generate('app_permissions_updateemailpermission', {
+          _studyArea: currentStudyArea,
+          groupType: groupType,
+          email: email
+        });
+      }
+
+      var confirmedValue = actualValue;
+      $.post(path, {value: !actualValue})
+          .done(function (data) {
+            // Success, update value
+            confirmedValue = data.value;
+            // $td.data('sort', !confirmedValue);
+            $td.attr('data-sort', !confirmedValue ? 1 : 0);
+
+            // Invalidate row cache for sorting
+            $dataTable.cell($td).invalidate();
+
+            // Clear sorting arrows
+            $td.closest('table').find('th').each(function () {
+              var $el = $(this);
+              if ($el.hasClass('sorting_asc') || $el.hasClass('sorting_desc')) {
+                $el.removeClass('sorting_desc')
+                    .removeClass('sorting_asc')
+                    .addClass('sorting');
+              }
+            });
+
+          })
+          .fail(function (e) {
+            console.error(e);
+            $('#error-modal').modal();
+          })
+          .always(function () {
+            $el.find('.fa').hide();
+            if (confirmedValue) {
+              $el.find('.fa-check').show();
+            } else {
+              $el.find('.fa-times').show();
+            }
+
+            $el.data('busy', false);
+          });
+    });
+  </script>
+{% endblock %}

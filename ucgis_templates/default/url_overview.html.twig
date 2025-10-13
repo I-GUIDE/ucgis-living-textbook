@@ -1,0 +1,100 @@
+{% extends 'single_column.html.twig' %}
+
+{% block before_title %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {{ buttons.header() }}
+  {{ buttons._action_button(path('app_default_urlrescanstudyarea'), 'fa-repeat', 'url.rescan-study-area', 'warning') }}
+  {{ buttons.footer() }}
+{% endblock %}
+
+{% block title %}
+  {{ 'url.overview-title'|trans }}
+{% endblock %}
+
+{% macro urlTable(urls, status, title, objects) %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {% if urls is not empty %}
+    <h3>{{ title|trans }}</h3>
+    <div class="table-responsive">
+      <table class="table table-hover">
+        <thead>
+        <tr>
+          <th scope="col">{{ 'url.url'|trans }}</th>
+          <th scope="col">{{ 'url.status'|trans }}</th>
+          <th scope="col">{{ 'form.edit'|trans }}</th>
+          <th scope="col" class="actions">{{ 'form.actions'|trans }}</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for url in urls %}
+          {% if url.context.class == 'App\\Entity\\StudyArea' %}
+            {% set description = 'url.study-area-path' %}
+            {% set edit_url = path('app_studyarea_edit', {studyArea: url.context.id}) %}
+            {% set description_args = {'%path%': ('study-area.' ~ url.context.pathAsTransKey)|trans} %}
+          {% elseif url.context.class == 'App\\Entity\\Concept' %}
+            {% set description = 'url.concept-path' %}
+            {% set edit_url = path('app_concept_edit', {concept: url.context.id}) %}
+            {% set description_args = {'%path%': ('concept.' ~ url.context.pathAsTransKey)|trans, '%name%': objects['concepts'][url.context.id].name} %}
+          {% elseif url.context.class == 'App\\Entity\\LearningOutcome' %}
+            {% set description = 'url.learning-outcome-path' %}
+            {% set edit_url = path('app_learningoutcome_edit', {learningOutcome: url.context.id}) %}
+            {% set description_args = {'%path%': ('learning-outcome.' ~ url.context.pathAsTransKey)|trans, '%name%': objects['learningOutcomes'][url.context.id].name, '%singular%': naming.get.learningOutcome.obj} %}
+          {% elseif url.context.class == 'App\\Entity\\ExternalResource' %}
+            {% set description = 'url.external-resource-path' %}
+            {% set edit_url = path('app_externalresource_edit', {externalResource: url.context.id}) %}
+            {% set description_args = {'%path%': ('external-resource.' ~ url.context.pathAsTransKey)|trans, '%title%': objects['externalResources'][url.context.id].title} %}
+          {% elseif url.context.class == 'App\\Entity\\Contributor' %}
+            {% set description = 'url.contributor-path' %}
+            {% set edit_url = path('app_contributor_edit', {contributor: url.context.id}) %}
+            {% set description_args = {'%path%': ('contributor.' ~ url.context.pathAsTransKey)|trans, '%name%': objects['contributors'][url.context.id].name} %}
+          {% elseif url.context.class == 'App\\Entity\\LearningPath' %}
+            {% set description = 'url.learning-path-path' %}
+            {% set edit_url = path('app_learningpath_edit', {learningPath: url.context.id}) %}
+            {% set description_args = {'%path%': ('learning-path.' ~ url.context.pathAsTransKey)|trans, '%name%': objects['learningPaths'][url.context.id].name} %}
+          {% else %}
+            {% set description = 'url.unknown' %}
+            {% set edit_url = '' %}
+          {% endif %}
+          <tr>
+            <td class="break-all ba-60">
+              <a href="{{ url.url }}" target="_blank">{{ url.url }}</a>
+            </td>
+            <td>
+              {{ status|trans }}
+            </td>
+            <td>
+              {% if edit_url != '' %}
+                <a href="{{ edit_url }}">{{ description|trans(description_args) }}</a>
+              {% else %}
+                {{ description|trans }}
+              {% endif %}
+            </td>
+            <td>
+              {{ buttons._action_button(path('app_default_urlrescan', {url: url.url|url_encode}), 'fa-repeat', 'url.rescan', 'primary') }}
+            </td>
+          </tr>
+        {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% block content %}
+  {% if lastScanned is not null %}
+    <p>
+      {{ 'url.last-scanned'|trans({'%date%': lastScanned|date('d M Y H:i')}) }}
+    </p>
+    {% from _self import urlTable %}
+    {{ urlTable(badExternalUrls, 'url.bad', 'url.bad-external', objects) }}
+    {{ urlTable(badInternalUrls, 'url.bad', 'url.bad-internal', objects) }}
+    {{ urlTable(wrongStudyAreaUrls, 'url.internal-wrong', 'url.bad-internal-wrong', objects) }}
+    {{ urlTable(goodExternalUrls, 'url.good', 'url.good-external', objects) }}
+    {{ urlTable(goodInternalUrls, 'url.good', 'url.good-internal', objects) }}
+    {{ urlTable(unscannedExternalUrls, 'url.unscanned', 'url.unscanned-external', objects) }}
+    {{ urlTable(unscannedInternalUrls, 'url.unscanned', 'url.unscanned-internal', objects) }}
+
+  {% else %}
+    {{ 'url.urls-unscanned'|trans }}
+  {% endif %}
+{% endblock %}

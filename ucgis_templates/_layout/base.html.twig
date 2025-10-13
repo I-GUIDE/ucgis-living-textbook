@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Living Textbook | {% block title %}Home{% endblock %} | By ITC, University of Twente</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Icon -->
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+  <link rel="manifest" href="/site.webmanifest">
+  <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#000000">
+  <meta name="msapplication-TileColor" content="#00aba9">
+  <meta name="theme-color" content="#f8f9fa">
+
+  {% block default_javascripts %}
+    <!-- Default JS -->
+    {% if sentry_dsn is not null %}
+      <script type="text/javascript">
+        window.SENTRY_DSN = '{{ sentry_dsn }}';
+        window.SENTRY_RELEASE = '{{ sentry_release }}';
+        window.SENTRY_USERNAME = '{{ app.user ? app.user.userIdentifier : 'anon.' }}';
+        window.SENTRY_IP_ADDRESS = '{{ app.request.clientIp }}';
+      </script>
+    {% endif %}
+
+    {{ encore_entry_script_tags('vendor') }}
+    {{ encore_entry_script_tags('app') }}
+  {% endblock %}
+
+  <!-- Included JS -->
+  {% block javascripts %}{% endblock %}
+
+  <!-- Default CSS -->
+  {% block default_stylesheets %}
+    {{ encore_entry_link_tags('vendor') }}
+    {{ encore_entry_link_tags('app') }}
+  {% endblock %}
+
+  <!-- Included CSS -->
+  {% block stylesheets %}{% endblock %}
+</head>
+<body>
+{% block base_content %}{% endblock %}
+{% block javascripts_bottom %}{% endblock %}
+</body>
+</html>

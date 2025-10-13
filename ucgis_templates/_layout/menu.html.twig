@@ -1,0 +1,221 @@
+{% macro buttons() %}
+  <a class="btn btn-outline-primary global-search" href="#">
+    <i class="fa fa-fw fa-search"></i>
+  </a>
+
+  <a class="btn btn-outline-primary" href="{{ path('app_help_index') }}">
+    <i class="fa fa-fw fa-question"></i>
+  </a>
+
+  <div class="menu-toggle learning-path-browser-toggle d-none"
+       data-toggle="tooltip" title="{{ 'browser.toggle-learningpath'|trans }}">
+    <input type="checkbox" data-toggle="toggle"
+           data-size="sm" data-width="55px" data-height="38px" {# Are required for correct rendering #}
+           data-on="<span class='fa-stack'><i class='fa fa-road fa-stack-1x'></i></span>"
+           data-off="<span class='fa-stack'><i class='fa fa-road fa-stack-1x'></i></span>"
+           data-onstyle="primary" data-offstyle="secondary">
+  </div>
+
+  <div class="menu-toggle concept-browser-toggle"
+       data-toggle="tooltip" title="{{ 'browser.toggle'|trans }}">
+    <input type="checkbox" data-toggle="toggle"
+           data-size="sm" data-width="55px" data-height="38px" {# Are required for correct rendering #}
+           data-on="<span class='fa-stack'><i class='fa fa-ltb-map fa-stack-1x'></i></span>"
+           data-off="<span class='fa-stack'><i class='fa fa-ltb-map fa-stack-1x'></i></span>"
+           data-onstyle="primary" data-offstyle="secondary">
+  </div>
+
+  {% if app.user %}
+    <a class="btn btn-outline-dark top-level" href="{{ path('logout') }}">{{ 'login.logout'|trans }}</a>
+  {% endif %}
+{% endmacro %}
+
+{% from _self import buttons %}
+
+<div class="global-search-form">
+  {{ include('search/search_form.html.twig', [], false) }}
+</div>
+
+<nav class="navbar sticky-top navbar-expand-lg navbar-light bg-light">
+  <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapseLeft"
+          aria-controls="collapseLeft" aria-expanded="false" aria-label="Toggle navigation">
+    <span class="navbar-toggler-icon"></span>
+  </button>
+
+  <a class="navbar-logo-brand" href="{{ path('app_default_dashboard') }}">
+    <div class="navbar-logo"></div>
+    <div class="navbar-brand"
+         {% if _twigStudyArea is not empty %}data-toggle="tooltip"
+         title="{{ 'study-area.current-area'|trans({'%item%': _twigStudyArea.name}) }}"{% endif %}>
+      Living Textbook
+    </div>
+  </a>
+
+  <button class="navbar-toggler user d-flex d-md-none" type="button" data-toggle="collapse" data-target="#collapseRight"
+          aria-controls="collapseRight" aria-expanded="false" aria-label="Toggle user menu">
+    <i class="fa fa-fw fa-user"></i>
+  </button>
+
+  <div class="d-none d-md-inline-block d-lg-none">
+    {{ buttons() }}
+  </div>
+
+  <div class="collapse navbar-collapse" id="collapseLeft">
+    <ul class="navbar-nav mr-auto">
+      <li class="nav-item">
+        <a class="nav-link" href="{{ path('app_default_dashboard') }}">{{ 'app.dashboard'|trans }}</a>
+      </li>
+
+      <li class="nav-item dropdown" id="show-content-menu">
+        <a class="nav-link dropdown-toggle" href="#" id="edit-dropdown" role="button" data-toggle="dropdown"
+           aria-haspopup="true" aria-expanded="false">
+          {{ 'menu.show'|trans }}
+        </a>
+        <div class="dropdown-menu" aria-labelledby="edit-dropdown">
+          {% set any_content = false %}
+          {% if is_granted('MENU_CONCEPTS', _twigStudyArea) %}
+            {% set any_content = true %}
+            <a class="dropdown-item"
+               href="{{ path('app_concept_list') }}">{{ 'menu.concept'|trans }}</a>
+            <a class="dropdown-item"
+               href="{{ path('app_concept_listinstances') }}">{{ 'menu.instances'|trans }}</a>
+          {% endif %}
+          {% if is_granted('MENU_LEARNING_PATHS', _twigStudyArea) %}
+            {% set any_content = true %}
+            <a class="dropdown-item"
+               href="{{ path('app_learningpath_list') }}">{{ 'menu.learning-paths'|trans }}</a>
+          {% endif %}
+          {% if is_granted('MENU_ABBREVIATIONS', _twigStudyArea) %}
+            {% set any_content = true %}
+            <a class="dropdown-item"
+               href="{{ path('app_abbreviation_list') }}">{{ 'menu.abbreviations'|trans }}</a>
+          {% endif %}
+          {% if is_granted('MENU_CONTRIBUTORS', _twigStudyArea) %}
+            {% set any_content = true %}
+            <a class="dropdown-item"
+               href="{{ path('app_contributor_list') }}">{{ 'menu.contributors'|trans }}</a>
+          {% endif %}
+          {% if is_granted('MENU_EXTERNAL_RESOURCES', _twigStudyArea) %}
+            {% set any_content = true %}
+            <a class="dropdown-item"
+               href="{{ path('app_externalresource_list') }}">{{ 'menu.external-resources'|trans }}</a>
+          {% endif %}
+          {% if is_granted('MENU_LEARNING_OUTCOMES', _twigStudyArea) %}
+            {% set any_content = true %}
+            <a class="dropdown-item"
+               href="{{ path('app_learningoutcome_list') }}">{{ naming.get.learningOutcome.objs|capitalize }}</a>
+          {% endif %}
+        </div>
+      </li>
+      {% if not any_content %}
+        <script type="text/javascript">
+          {# Remove the menu if there is absolutely no content #}
+          $('#show-content-menu').remove();
+        </script>
+      {% endif %}
+
+      {% if _twigStudyArea.isReviewModeEnabled %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="review-dropdown" role="button" data-toggle="dropdown"
+             aria-haspopup="true" aria-expanded="false">
+            {{ 'menu.review'|trans }}
+          </a>
+          <div class="dropdown-menu" aria-labelledby="review-dropdown">
+            <a class="dropdown-item"
+               href="{{ path('app_review_submit') }}">{{ 'menu.review-submit'|trans }}</a>
+            <a class="dropdown-item"
+               href="{{ path('app_review_submissions') }}">{{ 'menu.review-submission'|trans }}</a>
+            {% if is_granted('STUDYAREA_OWNER', _twigStudyArea) %}
+              <a class="dropdown-item"
+                 href="{{ path('app_review_publish') }}">{{ 'menu.review-publish'|trans }}</a>
+            {% endif %}
+          </div>
+        </li>
+      {% endif %}
+
+      {% if is_granted('STUDYAREA_EDIT', _twigStudyArea) %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="data-dropdown" role="button" data-toggle="dropdown"
+             aria-haspopup="true" aria-expanded="false">
+            {{ 'menu.data'|trans }}
+          </a>
+
+          <div class="dropdown-menu" aria-labelledby="data-dropdown">
+            {% if _twigStudyArea.analyticsDashboardEnabled and is_granted('STUDYAREA_ANALYTICS', _twigStudyArea) %}
+              <a class="dropdown-item" href="{{ path('app_analytics_dashboard') }}">
+                {{ 'menu.analytics-dashboard'|trans }}
+              </a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ path('app_data_excelstatus') }}"
+               target="_blank">{{ 'menu.excel-status'|trans }}</a>
+            <a class="dropdown-item"
+               href="{{ path('app_default_urloverview') }}">{{ 'menu.urls'|trans }}</a>
+            {% if is_granted('STUDYAREA_OWNER', _twigStudyArea) %}
+              {% if _twigStudyArea.trackUsers %}
+                <a class="dropdown-item" href="{{ path('app_tracking_export') }}"
+                   target="_blank">{{ 'menu.tracking-export'|trans }}</a>
+              {% endif %}
+              <a class="dropdown-item" href="{{ path('app_data_duplicate') }}">{{ 'menu.duplicate'|trans }}</a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ path('app_data_download') }}">{{ 'menu.download'|trans }}</a>
+            {% if is_granted('ROLE_SUPER_ADMIN') and _twigStudyArea.urlExportEnabled %}
+              <a class="dropdown-item" href="{{ path('app_data_export_url') }}">{{ 'menu.export-to-url'|trans }}</a>
+            {% endif %}
+            <a class="dropdown-item" href="{{ path('app_data_upload') }}">{{ 'menu.import-data'|trans }}</a>
+          </div>
+        </li>
+      {% endif %}
+
+      {% if app.user or is_granted('STUDYAREA_EDIT', _twigStudyArea) %}
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="config-dropdown" role="button" data-toggle="dropdown"
+             aria-haspopup="true" aria-expanded="false">
+            {{ 'menu.config'|trans }}
+          </a>
+          <div class="dropdown-menu" aria-labelledby="config-dropdown">
+            {% if is_granted('STUDYAREA_EDIT', _twigStudyArea) %}
+              <a class="dropdown-item" href="{{ path('app_relationtype_list') }}">{{ 'menu.relation-type'|trans }}</a>
+            {% endif %}
+
+            {% if is_granted('STUDYAREA_EDIT', _twigStudyArea) %}
+              <a class="dropdown-item" href="{{ path('app_tag_list') }}">{{ 'menu.tags'|trans }}</a>
+            {% endif %}
+
+            {% if is_granted('STUDYAREA_OWNER', _twigStudyArea) %}
+              <a class="dropdown-item"
+                 href="{{ path('app_studyarea_fieldconfiguration') }}">{{ 'menu.field-configration'|trans }}</a>
+            {% endif %}
+
+            {% if is_granted('STUDYAREA_OWNER', _twigStudyArea) %}
+              <a class="dropdown-item" href="{{ path('app_permissions_studyarea') }}">{{ 'menu.permissions'|trans }}</a>
+            {% endif %}
+
+            {% if is_granted('ROLE_SUPER_ADMIN') %}
+              <a class="dropdown-item"
+                 href="{{ path('app_studyarea_listgroups') }}">{{ 'menu.study-area-groups'|trans }}</a>
+              <a class="dropdown-item" href="{{ path('app_permissions_admins') }}">{{ 'menu.admin'|trans }}</a>
+              <a class="dropdown-item" href="{{ path('app_user_fallbacklist') }}">{{ 'menu.fallback-users'|trans }}</a>
+            {% endif %}
+
+            {% if app.user %}
+              <a class="dropdown-item" href="{{ path('app_user_apitokens') }}">
+                {{ 'menu.api-tokens'|trans }}
+              </a>
+            {% endif %}
+
+            {% if app.user and not app.user.isOidc|default(false) %}
+              <a class="dropdown-item"
+                 href="{{ path('app_user_fallbackchangeownpassword') }}">{{ 'menu.change-password'|trans }}</a>
+            {% endif %}
+          </div>
+        </li>
+      {% endif %}
+
+    </ul>
+  </div>
+
+  <div class="collapse navbar-collapse d-md-none" id="collapseRight">
+    {{ buttons() }}
+  </div>
+
+</nav>

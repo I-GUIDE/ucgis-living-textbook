@@ -1,0 +1,107 @@
+{% macro browser_button(browser_id) %}
+  {% from _self import _action_button %}
+  {{ _action_button('#', 'fa-ltb-map', 'browser.open', 'primary', false, 'eDispatch.showConcept(' ~ browser_id ~ ');') }}
+{% endmacro %}
+
+{% macro learning_path_button(learningpath_id) %}
+  {% from _self import _action_button %}
+  {{ _action_button('#', 'fa-ltb-map', 'learning-path.open', 'primary', false, 'eDispatch.openLearningPathBrowser(' ~ learningpath_id ~ ');') }}
+{% endmacro %}
+
+{% macro progress_button() %}
+  {% from _self import _action_button %}
+  {{ _action_button(path('app_data_excelstatus'), 'fa-tasks', 'menu.excel-status', 'primary', true) }}
+{% endmacro %}
+
+{% macro print_button(url) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-print', 'menu.print', 'primary', true) }}
+{% endmacro %}
+
+{% macro list_button(url) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-list', 'form.list', 'dark') }}
+{% endmacro %}
+
+{% macro show_button(url) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-eye', 'form.show', 'primary') }}
+{% endmacro %}
+
+{% macro add_button(url, disabled) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-plus', 'form.add', 'success', false, false, disabled) }}
+{% endmacro %}
+
+{% macro edit_button_disabled_when_frozen(url) %}
+  {% from _self import edit_button %}
+  {{ edit_button(url, _twigStudyArea.isFrozen ? 'study-area.frozen'|trans : false) }}
+{% endmacro %}
+
+{% macro edit_button(url, disabled) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-pencil', 'form.edit', '', false, false, disabled) }}
+{% endmacro %}
+
+{% macro remove_button_disabled_when_frozen(url, label) %}
+  {% from _self import remove_button %}
+  {{ remove_button(url, _twigStudyArea.isFrozen ? 'study-area.frozen'|trans : false, label) }}
+{% endmacro %}
+
+{% macro remove_button(url, disabled, label) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-trash', label|default('form.remove'), 'danger', false, false, disabled) }}
+{% endmacro %}
+
+{% macro transfer_owner_button(url) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-exchange', 'study-area.transfer-ownership') }}
+{% endmacro %}
+
+{% macro freeze_button(url, disabled) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-lock', 'form.freeze', 'warning', false, false, disabled) }}
+{% endmacro %}
+
+{% macro unfreeze_button(url, disabled) %}
+  {% from _self import _action_button %}
+  {{ _action_button(url, 'fa-unlock', 'form.unfreeze', 'warning', false, false, disabled) }}
+{% endmacro %}
+
+{% macro _action_button(url, icon, label, color, blank, onclick, disabled) %}
+  {% set disabled = disabled|default('') %}
+  {% if disabled is not empty and disabled is not same as(true) %}
+    <div class="d-inline-block" data-toggle="tooltip" title="{{ disabled }}">
+  {% endif %}
+  <a href="{{ url }}"{% if onclick|default(false) %} onclick="{{ onclick }}" {% endif %}{% if blank|default(false) %} target="_blank" {% endif %}
+     class="btn btn-outline-{{ color|default('secondary') }}{% if disabled is not empty %} disabled{% endif %}">
+    <i class="fa fa-fw {{ icon }}"></i> {{ label|trans }}
+  </a>
+  {% if disabled is not empty %}
+    </div>
+  {% endif %}
+{% endmacro %}
+
+{% macro header() %}
+<div class="float-right header-bar" role="group" aria-label="{{ 'form.action-bar'|trans }}">
+  {% endmacro %}
+
+  {% macro footer() %}
+</div>
+  <div class="clearfix d-lg-none mb-1"></div>
+{% endmacro %}
+
+{% macro add_row(list_url) %}
+  {% from _self import header, footer, list_button %}
+  {{ header() }}
+  {{ list_button(list_url) }}
+  {{ footer() }}
+{% endmacro %}
+
+{% macro edit_row(remove_url, list_url) %}
+  {% from _self import header, footer, show_button, remove_button, list_button %}
+  {{ header() }}
+  {{ remove_button(remove_url) }}
+  {{ list_button(list_url) }}
+  {{ footer() }}
+{% endmacro %}

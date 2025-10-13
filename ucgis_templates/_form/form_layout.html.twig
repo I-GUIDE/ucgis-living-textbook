@@ -1,0 +1,145 @@
+{% extends 'bootstrap_4_horizontal_layout.html.twig' %}
+
+{% block form_start -%}
+  {%- set attr = attr|merge({onsubmit: 'eDispatch.pageSubmit($(this));'}) -%}
+  {{- parent() -}}
+{%- endblock %}
+
+{% block form_label_class -%}
+  {%- if not hide_label|default(false) -%}
+    {% if full_width_label|default(false) %}
+      col-12
+    {% else %}
+      col-md-3 col-lg-2
+    {% endif %}
+  {%- endif -%}
+{%- endblock %}
+
+{% block form_group_class -%}
+  {%- if hide_label|default(false) or full_width_label|default(false) -%}
+    col-12
+  {%- else -%}
+    col-md-9 col-lg-10
+  {%- endif -%}
+{%- endblock form_group_class %}
+
+{% block submit_widget -%}
+  {%- set attr = attr|merge({class: (attr.class|default('btn-outline-success'))|trim}) -%}
+  {{- parent() -}}
+{%- endblock %}
+
+{% block form_row -%}
+  {{- block('form_header') -}}
+
+  {%- if expanded is defined and expanded -%}
+    {{ block('fieldset_form_row') }}
+  {%- else -%}
+    <div
+        class="form-group row{% if (not compound or force_error|default(false)) and not valid %} is-invalid{% endif %}">
+      {{- form_label(form) -}}
+      <div class="{{ block('form_group_class') }}">
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+      </div>
+    </div>
+  {%- endif -%}
+{% endblock %}
+
+{% block fieldset_form_row -%}
+  <fieldset class="form-group">
+    <div class="row{% if (not compound or force_error|default(false)) and not valid %} is-invalid{% endif %}">
+      {{- form_label(form) -}}
+      <div class="{{ block('form_group_class') }}">
+        {{- form_widget(form) -}}
+        {{- form_help(form) -}}
+        {{- form_errors(form) -}}
+      </div>
+    </div>
+  </fieldset>
+{%- endblock fieldset_form_row %}
+
+{% block checkbox_row -%}
+  {{- block('form_header') -}}
+  {{- parent() -}}
+{% endblock %}
+
+{% block submit_row -%}
+  {{- block('form_header') -}}
+  {{- parent() -}}
+{%- endblock submit_row %}
+
+{% block reset_row -%}
+  {{- block('form_header') -}}
+  {{- parent() -}}
+{%- endblock reset_row %}
+
+{% block file_row %}
+  {{- block('form_header') -}}
+  {{ block('form_row') }}
+{% endblock %}
+
+{% block form_label -%}
+  {%- if hide_label is defined and hide_label == true -%}
+  {%- else -%}
+    {{ parent() }}
+  {%- endif -%}
+{% endblock %}
+
+{% block form_label_errors %}
+{% endblock %}
+
+{% block form_errors -%}
+  {%- if errors|length > 0 -%}
+    <div class="{% if form is not rootform %}invalid-feedback{% else %}alert alert-danger{% endif %}">
+      <ul class="list-unstyled mb-0">
+        {%- for error in errors -%}
+          <li><i class="fa fa-exclamation-circle"></i> {{ error.message }}</li>
+        {%- endfor -%}
+      </ul>
+    </div>
+  {%- endif %}
+{%- endblock form_errors %}
+
+{# Define block which enables form_header option #}
+{% block form_header -%}
+  {%- if form_header is defined and form_header != false -%}
+    <h2>{{ form_header|trans }}</h2>
+  {%- endif -%}
+{%- endblock %}
+
+{%- block choice_widget_collapsed -%}
+  {% set select2_placeholder = select2_placeholder is not none ? select2_placeholder : placeholder %}
+  {% set placeholder = placeholder is not none ? '' : placeholder %}
+  {{- parent() -}}
+  {%- if select2 -%}
+    <script type="text/javascript">
+      $('#{{ id }}').select2({
+        width: '100%',
+        theme: 'bootstrap',
+        allowClear: {{ select2_allow_clear ? 'true' : 'false' }},
+        {% if select2_placeholder is not none %}placeholder: '{{ translation_domain is same as(false) ? select2_placeholder : select2_placeholder|trans({}, translation_domain) }}',{% endif %}
+      });
+    </script>
+  {%- endif -%}
+{%- endblock -%}
+
+{% block checkbox_widget %}
+  {%- set label_attr = label_attr|merge({class: label_attr.class|default('checkbox-custom')|trim}) -%}
+  {{ parent() }}
+{% endblock %}
+
+{% block checkbox_label %}
+  {%- set label_attr = label_attr|merge({class: label_attr.class|default('checkbox-custom')|trim}) -%}
+  {{ parent() }}
+{% endblock %}
+
+{% block radio_widget %}
+  {%- set label_attr = label_attr|merge({class: label_attr.class|default('radio-custom')|trim}) -%}
+  {{ parent() }}
+{% endblock %}
+
+{% block radio_label %}
+  {%- set label_attr = label_attr|merge({class: label_attr.class|default('radio-custom')|trim}) -%}
+  {{ parent() }}
+{% endblock %}

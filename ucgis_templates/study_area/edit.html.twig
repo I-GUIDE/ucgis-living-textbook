@@ -1,0 +1,132 @@
+{% extends 'single_column.html.twig' %}
+
+{% block before_title %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {{ buttons.header() }}
+  {{ buttons.list_button(path(list_route)) }}
+  {{ buttons.footer() }}
+{% endblock %}
+
+{% block title %}
+  {{ 'study-area.edit-title'|trans({'%item%': studyArea.name}) }}
+{% endblock %}
+
+{% block content %}
+  {{ form(form) }}
+
+    <script type="text/javascript">
+      $(function () {
+
+        {# Some fields requiring JS are only available for admins, so remove JS to prevent errors when this is not the case #}
+        {% if is_granted('ROLE_SUPER_ADMIN') %}
+
+        $('#{{ form.openAccess.vars.id }}')
+            .on('change', function () {
+              var openAccess = $(this).is(':checked');
+              var $trackUsersForm = $('#{{ form.trackUsers.vars.id }}').closest('.form-group');
+              var $analyticsDashboardEnabledForm = $('#{{ form.analyticsDashboardEnabled.vars.id }}').closest('.form-group');
+
+              if (openAccess) {
+                $trackUsersForm.hide();
+                $analyticsDashboardEnabledForm.hide();
+              } else {
+                $trackUsersForm.show();
+                if ($('#{{ form.trackUsers.vars.id }}').is(':checked')) {
+                  $analyticsDashboardEnabledForm.show();
+                }
+              }
+            })
+            .change();
+
+        $('#{{ form.trackUsers.vars.id }}')
+            .on('change', function () {
+              var trackUsers = $(this).is(':checked');
+              var $analyticsDashboardEnabledForm = $('#{{ form.analyticsDashboardEnabled.vars.id }}').closest('.form-group');
+
+              if (trackUsers) {
+                $analyticsDashboardEnabledForm.show();
+              } else {
+                $analyticsDashboardEnabledForm.hide();
+              }
+            })
+            .change();
+
+        {% if trackingEnabled %}
+        function alertDataRemove() {
+          return confirm('{{ 'study-area.tracking-remove-data'|trans }}');
+        }
+
+        $('#{{ form.openAccess.vars.id }}')
+            .on('change', function () {
+              var $element = $(this);
+              setTimeout(function () {
+                if ($element.is(':checked')) {
+                  if (!alertDataRemove()) {
+                    $element.click();
+                  }
+                }
+              }, 100);
+            });
+        $('#{{ form.trackUsers.vars.id }}')
+            .on('change', function () {
+              var $element = $(this);
+              setTimeout(function () {
+                if (!$element.is(':checked')) {
+                  if (!alertDataRemove()) {
+                    $element.click();
+                  }
+                }
+              }, 100);
+            });
+        {% endif %}
+
+        {% endif %}
+
+        $('#{{ form.reviewModeEnabled.vars.id }}')
+            .on('change', function () {
+              if ($(this).is(':checked')) {
+                $('#{{ form.apiEnabled.vars.id }}').prop('checked', false);
+                $('#{{ form.dotron.vars.id }}').prop('checked', false);
+              }
+            });
+
+        $('#{{ form.apiEnabled.vars.id }}')
+            .on('change', function () {
+              if ($(this).is(':checked')) {
+                $('#{{ form.reviewModeEnabled.vars.id }}').prop('checked', false);
+              } else {
+                $('#{{ form.dotron.vars.id }}').prop('checked', false);
+              }
+            });
+
+        $('#{{ form.dotron.vars.id }}')
+            .on('change', function () {
+              var $mapWidthForm = $('#{{ form.mapWidth.vars.id }}').closest('.form-group');
+              var $mapHeightForm = $('#{{ form.mapHeight.vars.id }}').closest('.form-group');
+
+              if ($(this).is(':checked')) {
+                $('#{{ form.apiEnabled.vars.id }}').prop('checked', true);
+                $('#{{ form.reviewModeEnabled.vars.id }}').prop('checked', false);
+                $mapWidthForm.hide();
+                $mapHeightForm.hide();
+              } else {
+                $mapWidthForm.show();
+                $mapHeightForm.show();
+              }
+            })
+            .trigger('change');
+
+        $('#{{ form.urlExportEnabled.vars.id }}')
+            .on('change', function(){
+              var urlExportEnabled = $(this).is(':checked');
+              var $exportUrlForm = $('#{{ form.exportUrl.vars.id }}').closest('.form-group');
+              if (urlExportEnabled) {
+                $exportUrlForm.show();
+              } else {
+                $exportUrlForm.hide();
+              }
+            })
+            .trigger('change');
+      });
+    </script>
+{% endblock %}

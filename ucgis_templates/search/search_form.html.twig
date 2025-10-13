@@ -1,0 +1,27 @@
+{% set id = random() %}
+<script type="text/javascript">
+  function doSearch_{{ id }}(e) {
+    e.preventDefault();
+    var path = '{{ path('search') }}/' + $('#search_{{ id }}').val();
+    if (inDoubleColumn) {
+      eDispatch.pageLoad(path);
+    } else {
+      window.location.href = path;
+    }
+    return false;
+  }
+</script>
+<form name="search_form" class="ignore-submit" onsubmit="return doSearch_{{ id }}(event)">
+  <div class="form-group">
+    <input type="text" id="search_{{ id }}" required="required" value="{{ search|default('') }}"
+           placeholder="{{ 'search.placeholder'|trans }}" class="form-control">
+
+    {% if error|default(false) %}
+      <div class="invalid-feedback">
+        <ul class="list-unstyled mb-0">
+          <li><i class="fa fa-exclamation-circle"></i> {{ error }}</li>
+        </ul>
+      </div>
+    {% endif %}
+  </div>
+</form>

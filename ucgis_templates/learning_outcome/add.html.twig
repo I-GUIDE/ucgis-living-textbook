@@ -1,0 +1,17 @@
+{% extends 'single_column.html.twig' %}
+
+{% block before_title %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {{ buttons.add_row(path('app_learningoutcome_list')) }}
+{% endblock %}
+
+{% block title %}
+  {{ 'learning-outcome.add-title'|trans({'%singular%': naming.get.learningOutcome.obj}) }}
+{% endblock %}
+
+{% block content %}
+  {% from '_macro/_review.html.twig' import reviewNotice %}
+  {{ reviewNotice(learningOutcome) }}
+
+  {{ form(form) }}
+{% endblock %}

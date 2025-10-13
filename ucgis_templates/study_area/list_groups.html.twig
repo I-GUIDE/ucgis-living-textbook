@@ -1,0 +1,45 @@
+{% extends 'single_column.html.twig' %}
+
+{% block before_title %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {{ buttons.header() }}
+  {{ buttons.add_button(path('app_studyarea_addgroup')) }}
+  {{ buttons.footer() }}
+{% endblock %}
+
+{% block title %}
+  {{ 'study-area.groups.group'|trans }}
+{% endblock %}
+
+{% block content %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  <table id="group-table" class="table table-hover table-datatable table-bordered">
+    <thead>
+    <tr>
+      <th scope="col">{{ 'study-area.groups.name'|trans }}<i class="sort"></i></th>
+      <th scope="col">{{ 'study-area.groups.count'|trans }}<i class="sort"></i></th>
+      <th scope="col" class="actions">{{ 'form.actions'|trans }}</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for group in groups %}
+      {% set area_count = group.studyAreaCount %}
+      <tr>
+        <td>{{ group.name }}</td>
+        <td>{{ area_count }}</td>
+        <td class="actions">
+          {{ buttons.edit_button(path('app_studyarea_editgroup', {group: group.id})) }}
+          {{ buttons.remove_button(path('app_studyarea_removegroup', {group: group.id}),
+            area_count > 0 ? 'study-area.groups.remove-not-possible'|trans({'%item%': group.name}) : '') }}
+        </td>
+      </tr>
+    {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block javascripts_bottom %}
+  {{ dataTable('group-table', {
+    columnDefs: [{searchable: false, orderable: false, targets: -1}],
+  }) }}
+{% endblock %}

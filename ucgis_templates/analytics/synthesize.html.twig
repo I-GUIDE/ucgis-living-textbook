@@ -1,0 +1,63 @@
+{% extends 'single_column.html.twig' %}
+
+{% block javascripts %}
+  {{ parent() }}
+{% endblock %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <style>
+      #synthesize_request {
+          display: grid;
+          gap: 0.5rem;
+          grid-auto-rows: minmax(auto, auto);
+          grid-auto-flow: dense;
+          grid-template-columns: repeat(1, 1fr);
+      }
+
+      @media screen and (min-width: 768px) {
+          #synthesize_request {
+              grid-template-columns: repeat(2, 1fr);
+          }
+      }
+
+      @media screen and (min-width: 992px) {
+          #synthesize_request {
+              grid-template-columns: repeat(3, 1fr);
+          }
+      }
+
+      @media screen and (min-width: 1400px) {
+          #synthesize_request {
+              grid-template-columns: repeat(4, 1fr);
+          }
+      }
+
+      #synthesize_request .form-group.row {
+          margin-bottom: 0;
+      }
+
+      #synthesize_request .form-group.row:last-of-type {
+          grid-column-start: 1;
+          grid-column-end: -1;
+      }
+  </style>
+{% endblock %}
+
+{% block before_title %}
+  {% import '_macro/_action_buttons.html.twig' as buttons %}
+  {{ buttons.header() }}
+  {{ buttons._action_button(path('app_analytics_dashboard'), 'fa-dashboard', 'study-area.analytics-dashboard', 'primary') }}
+  {{ buttons.footer() }}
+{% endblock %}
+
+{% block title %}
+  {{ 'analytics.synthesize'|trans }}
+{% endblock %}
+
+{% block content %}
+  {% from '_layout/flashbags.html.twig' import flashbag_alert %}
+  {{ flashbag_alert('danger', 'analytics.synthesize-warning'|trans, 'fa-exclamation-triangle') }}
+
+  {{ form(form) }}
+{% endblock %}
