@@ -98,8 +98,7 @@ app:
   dashboard: 'Dashboard'
   delete-notice: 'If you create your private study area in this application, please note that these might be deleted after 6 months of inactivity.'
   user-tracking-notice: 'By entering this website you agree that we use software to track user activity. This information is only available to the administrator and is only used to improve and develop the Living Textbook learning environment in general. Personal data will not be available for anyone to see or saved.'
-  welcome: 'Welcome to the Living Textbook learning environment'
-  welcome-text: 'In this environment you can browse "bodies of knowledge" composed by experts or start creating one of your own (for registered users only).'
+  welcome: 'UCGIS Geographic Information Science & Technologies (GIS&T)'
 
 auth:
   create-account: 'Create account'
@@ -290,7 +289,6 @@ dashboard:
   study-area-create: 'Create new study area'
   study-area-empty: 'This study area is empty.'
   study-area-frozen: 'The data in this study area has been locked since %since%.'
-  study-area-landing: 'Select a study area to start with'
   study-area-open-access: 'Open access content'
   study-area-open-access-single: 'You can browse the open access "%name%" area.'
   study-area-open-access-multiple: 'You can select an open access area to browse below.'
