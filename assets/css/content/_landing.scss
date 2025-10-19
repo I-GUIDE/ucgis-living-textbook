@@ -5,36 +5,55 @@
   margin-top: $spacer;
   display: flex;
 
+  p {
+    text-align: center;
+  }
+
   > .license-image {
     flex-shrink: 0;
     flex-grow: 0;
     margin-top: $spacer * 0.5;
     height: 2rem;
+    width: 3rem;
+    background: url('../../img/footer/ltb-icon.svg') no-repeat bottom left;
+    background-size: contain;
+  }
+
+  > .creative-commons-license {
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin-top: $spacer * 0.5;
+    height: 2rem;
     width: 6.5rem;
-    background: url('../../img/footer/license.svg') no-repeat bottom left;
+    background: url('../../img/footer/license.svg') no-repeat bottom right;
     background-size: contain;
   }
 }
 
-.landing-page {
-  background: none;
+h1 {
+  font-size: 1rem;
+}
 
-  &::after {
-    content: '';
-    background: url('../../img/icon/LTB_Logo_V4.svg') no-repeat top right;
-    background-size: contain;
-    background-origin: content-box;
-    opacity: 0.1;
-    top: $spacer;
-    left: $spacer;
-    bottom: $spacer;
-    right: $spacer;
-    position: absolute;
+.logo {
+  width: 100px;
+  height: auto;
+}
 
-    pointer-events: none;
-    -webkit-user-select: none; /* Chrome all / Safari all */
-    -moz-user-select: none; /* Firefox all */
-    -ms-user-select: none; /* IE 10+ */
-    user-select: none; /* Likely future */
+/* Small phones and up */
+@media (min-width: 481px) {
+  h1 {
+    font-size: 1.25rem;
   }
 }
+
+/* Tablets and up */
+@media (min-width: 769px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+  .logo {
+    width: 125px;
+  }
+}
+
+
