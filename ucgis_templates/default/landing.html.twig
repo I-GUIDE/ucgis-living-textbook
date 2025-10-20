@@ -41,117 +41,95 @@
   <a href="https://www.itc.nl" target="_blank">Faculty ITC</a>
   from the
   <a href="https://www.utwente.nl" target="_blank">University of Twente</a>.
+  <br/>
+    {% if not app.user %}
+      <a href="/admin">Login</a>
+      {% else %}
+        <a href="/logout">Logout</a>
+    {% endif %}
   </span>
 {% endblock %}
 
 {% block content %}
 
-{% if studyAreaCount > 0 %}
-<div class="row justify-content-center m-3 mt-5 mb-5 text-center">
-  <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-    <div class="card h-100">
-      <div class="card-body">
-        <h4>{{ 'dashboard.study-area-open-access'|trans }}</h4>
-        {% if studyAreaForm is not null %}
-          {% if not app.user %}
-            <span>{{ 'dashboard.study-area-open-access-multiple'|trans }}</span>
-          {% endif %}
-          {{ form_start(studyAreaForm) }}
-          <div class="d-flex flex-row flex-wrap flex-md-no-wrap">
-            <div class="mt-1 mw-md-100 flex-grow-1">
-              {{ form_widget(studyAreaForm.studyArea) }}
-            </div>
-            <div class="mt-1 ml-auto ml-md-1">
-              {{ form_widget(studyAreaForm.submit) }}
-            </div>
-          </div>
-          <script type="text/javascript">
-            $('#studyarea_form_studyArea').on('change', function () {
-              $('#studyarea_form_submit').removeAttr('disabled');
-            });
+  {% if not app.user and app.request.attributes.get('_route') == 'admin_login' %}
+    <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
+      <div class="col-9">
+        <div class="card h-100">
+          <div class="card-body">
+            {% if studyAreaCount != 0 %}
+              <h4>{{ 'login.login'|trans }}</h4>
+            {% endif %}
 
-            $('#studyarea_form_submit').on('click', function () {
-              window.location.href = Routing.generate('_home', {'_studyArea': $('#studyarea_form_studyArea').val()}, false);
-              return false;
-            });
-          </script>
-          {{ form_end(studyAreaForm) }}
-        {% else %}
-          <p>{{ 'dashboard.study-area-open-access-single'|trans({'%name%': singleStudyArea.name}) }}</p>
-          <a href="{{ path('_home') }}" class="btn btn-outline-primary">{{ 'dashboard.open'|trans }}</a>
-        {% endif %}
+            {% from '_layout/flashbags.html.twig' import flashbag_alert %}
 
-{% endif %}
-      </div>
-    </div>
-  </div>
-
-    <div class="col-12 col-lg-6">
-      <div class="card h-100">
-        <div class="card-body">
-          <div class="row justify-content-center">
-            <p>Tutorial for Using this Living Textbook Platform</p>
-          </div>
-          <div class="row justify-content-center">
-            <p>Editors, Contributors, and Reviewers</p>
-          </div>
-          <div class="row justify-content-center">
-            Color-coded, 2-page list of Topics (pdf)
+            {% for flash_message in app.session.flashbag.get('authError') %}
+              {{ flashbag_alert('danger', flash_message, 'fa-exclamation-triangle', false) }}
+            {% endfor %}
+            {{ form(loginForm, {attr: {target: '_parent'}}) }}
           </div>
         </div>
       </div>
     </div>
+  {% endif %}
+
+  {% if studyAreaCount > 0 %}
+    <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
+    <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+    <div class="card h-100">
+    <div class="card-body">
+    <h4>{{ 'dashboard.study-area-open-access'|trans }}</h4>
+  {% if studyAreaForm is not null %}
+  {% if not app.user %}
+    <span>{{ 'dashboard.study-area-open-access-multiple'|trans }}</span>
+  {% endif %}
+    {{ form_start(studyAreaForm) }}
+    <div class="d-flex flex-row flex-wrap flex-md-no-wrap">
+      <div class="mt-1 mw-md-100 flex-grow-1">
+        {{ form_widget(studyAreaForm.studyArea) }}
+      </div>
+      <div class="mt-1 ml-auto ml-md-1">
+        {{ form_widget(studyAreaForm.submit) }}
+      </div>
+    </div>
+    <script type="text/javascript">
+      $('#studyarea_form_studyArea').on('change', function () {
+        $('#studyarea_form_submit').removeAttr('disabled');
+      });
+
+      $('#studyarea_form_submit').on('click', function () {
+        window.location.href = Routing.generate('_home', {'_studyArea': $('#studyarea_form_studyArea').val()}, false);
+        return false;
+      });
+    </script>
+    {{ form_end(studyAreaForm) }}
+  {% else %}
+    {#    <p>{{ 'dashboard.study-area-open-access-single'|trans({'%name%': singleStudyArea.name}) }}</p> #}
+    <p>{{ singleStudyArea.name }}</p>
+    <a href="{{ path('_home') }}" class="btn btn-outline-primary">{{ 'dashboard.open'|trans }}</a>
+  {% endif %}
+
+  {% endif %}
+  </div>
+  </div>
   </div>
 
-
-  {#  {% if app.user %} #}
-  {#    <div class="spacer"></div> #}
-  {#    <p>{{ 'app.delete-notice'|trans }}</p> #}
-  {#  {% endif %} #}
-
-  {#  <div class="spacer"></div> #}
-
-  {#  {% if not app.user %} #}
-  {#    {% if studyAreaCount != 0 %} #}
-  {#      <h4>{{ 'login.login'|trans }}</h4> #}
-  {#    {% endif %} #}
-
-  {#    <p class="card-text"> #}
-  {#      {% if studyAreaCount == 0 %} #}
-  {#        {{ 'login.login-text-no-open-access'|trans }} #}
-  {#      {% else %} #}
-  {#        {{ 'login.login-text'|trans }} #}
-  {#      {% endif %} #}
-  {#      {{ 'login.privacy-policy-text'|trans }} #}
-  {#      <a href="https://www.utwente.nl/en/about-our-website/" target="_blank" class="no-block"> #}
-  {#        {{ 'login.privacy-policy'|trans|lower }}</a>. #}
-  {#    </p> #}
-
-  {#    {% from '_layout/flashbags.html.twig' import flashbag_alert %} #}
-
-  {#    #}{# Authentication error messages #}
-  {#    {% for flash_message in app.session.flashbag.get('authError') %} #}
-  {#      {{ flashbag_alert('danger', flash_message, 'fa-exclamation-triangle', false) }} #}
-  {#    {% endfor %} #}
-
-  {#    <ul class="nav nav-tabs nav-fill"> #}
-  {#      #}{# NOTE: Temporarily disable SSO login function until further notice... #}
-  {#      <li class="nav-item"> #}
-  {#        <a class="nav-link{% if loginFormActive %} active{% endif %}" #}
-  {#           onclick="focusLoginForm()" #}
-  {#           id="tab-custom-account-button" href="#tab-custom-account" role="tab" data-toggle="tab"> #}
-  {#          {{ 'login.custom-account'|trans }} #}
-  {#        </a> #}
-  {#      </li> #}
-  {#    </ul> #}
-  {#    <div class="tab-content" id="login-option"> #}
-  {#      #}{# NOTE: Temporarily disable SSO login function until further notice... #}
-  {#      <div class="tab-pane" id="tab-custom-account" role="tabpanel" aria-labelledby="tab-custom-account-button"> #}
-  {#        {{ form(loginForm, {attr: {target: '_parent'}}) }} #}
-  {#      </div> #}
-  {#    </div> #}
-
-  {#  {% endif %} #}
+  <div class="col-12 col-lg-6">
+    <div class="card h-100">
+      <div class="card-body">
+        <div class="row justify-content-center">
+          <p>Tutorial for Using this Living Textbook Platform</p>
+        </div>
+        <div class="row justify-content-center">
+          <p>Editors, Contributors, and Reviewers</p>
+        </div>
+        <div class="row justify-content-center">
+          Color-coded, 2-page list of Topics (pdf)
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
 
   <div class="row w-60 m-auto justify-content-center">
     <div class="license-notice">
@@ -159,12 +137,15 @@
       <p>
         {{ block('license') }}
       </p>
+
       <div class="creative-commons-license"></div>
     </div>
   </div>
-  {% endblock %}
+{% endblock %}
 
-  {% block footer %} {% endblock %}
+  {% block footer %}
+    {#  Nothing here #}
+  {% endblock %}
 
   {% block javascripts_bottom %}
     {{ parent() }}

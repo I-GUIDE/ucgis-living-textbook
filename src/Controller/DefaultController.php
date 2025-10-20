@@ -116,6 +116,7 @@ class DefaultController extends AbstractController
 
   #[Route('/', options: ['no_login_wrap' => true])]
   #[Route('', name: 'base_url', options: ['no_login_wrap' => true])]
+  #[Route('/admin', name: 'admin_login', options: ['no_login_wrap' => true])]
   #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
   public function landing(
     Request $request, FormFactoryInterface $formFactory, TranslatorInterface $translator,
