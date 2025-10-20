@@ -290,7 +290,6 @@ dashboard:
   study-area-empty: 'This study area is empty.'
   study-area-frozen: 'The data in this study area has been locked since %since%.'
   study-area-open-access: 'Open access content'
-  study-area-open-access-single: 'You can browse the open access "%name%" area.'
   study-area-open-access-multiple: 'You can select an open access area to browse below.'
   study-area-text: 'Welcome to the "%studyArea%" study area.'
   study-area-switch: 'Search for another study area'
