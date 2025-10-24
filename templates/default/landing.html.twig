@@ -52,7 +52,31 @@
   </span>
 {% endblock %}
 
+
+
 {% block content %}
+
+
+  <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
+    <div class="col-sm-12 col-md-10 col-xl-10 mt-3">
+      {% embed 'search/search_form.html.twig' with {search_path: path('_home') ~ '/search'} %}
+        {% block search_form_input_group_prepend %}
+          <div class="input-group-prepend d-none d-md-block">
+            <span class="input-group-text">Search BoK</span>
+          </div>
+        {% endblock %}
+
+        {% block searc_form_input_group_append %}
+          <div class="input-group-append">
+            <button class="btn btn-secondary" type="submit">
+              <i class="fa fa-search"></i>
+            </button>
+          </div>
+        {% endblock %}
+
+      {% endembed %}
+    </div>
+  </div>
 
   {% set hasStudyArea = studyAreaCount > 0 %}
 

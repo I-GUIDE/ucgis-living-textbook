@@ -73,6 +73,7 @@ class StudyAreaRepository extends ServiceEntityRepository
         // https://stackoverflow.com/questions/12652034/how-can-i-order-by-null-in-dql
       ->addSelect('CASE WHEN g.name IS NULL THEN 1 ELSE 0 END HIDDEN _isFieldNull')
       ->orderBy('_isFieldNull', 'ASC')
+      ->addOrderBy('sa.createdAt', 'DESC')
       ->addOrderBy('g.name', 'ASC')
       ->addOrderBy('sa.name', 'ASC');
 
