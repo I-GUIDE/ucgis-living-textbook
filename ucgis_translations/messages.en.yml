@@ -472,9 +472,8 @@ login:
   bad-credentials: 'Your credentials are invalid.'
   custom-account: 'Local account'
   general-error: 'Login failed due to an unknown error.'
-  login: 'Login'
-  login-text: 'In order to view more content (and create your own) in the living textbook, you will need to login.
-      You can either log in using your university credentials (SURFconext) or an account specifically created for you.'
+  login: 'Administrator Login'
+  login-text: 'Administrator login only. You do not need to register or login to browse UCGIS Body of Knowledge open access content.'
   login-text-no-open-access: 'Before you can continue and work with the living textbook, you will need to login.
     You can either log in using your university credentials (SURFconext) or an account specifically created for you.'
   logout: 'Logout'

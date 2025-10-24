@@ -45,35 +45,16 @@
     {% if not app.user %}
       <a href="/admin">Login</a>
       {% else %}
-        <a href="/logout">Logout</a>
+      <a href="/logout">Logout</a>
     {% endif %}
   </span>
 {% endblock %}
 
 {% block content %}
 
-  {% if not app.user and app.request.attributes.get('_route') == 'admin_login' %}
-    <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
-      <div class="col-9">
-        <div class="card h-100">
-          <div class="card-body">
-            {% if studyAreaCount != 0 %}
-              <h4>{{ 'login.login'|trans }}</h4>
-            {% endif %}
+  {% set hasStudyArea = studyAreaCount > 0 %}
 
-            {% from '_layout/flashbags.html.twig' import flashbag_alert %}
-
-            {% for flash_message in app.session.flashbag.get('authError') %}
-              {{ flashbag_alert('danger', flash_message, 'fa-exclamation-triangle', false) }}
-            {% endfor %}
-            {{ form(loginForm, {attr: {target: '_parent'}}) }}
-          </div>
-        </div>
-      </div>
-    </div>
-  {% endif %}
-
-  {% if studyAreaCount > 0 %}
+  {% if hasStudyArea %}
     <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
     <div class="col-12 col-lg-6 mb-3 mb-lg-0">
     <div class="card h-100">
@@ -113,8 +94,8 @@
   </div>
   </div>
   </div>
-
-  <div class="col-12 col-lg-6">
+  {% set contentClass = hasStudyArea ? 'col-12 col-lg-6' : 'col-sm-12 col-md-10 col-xl-8' %}
+  <div class="{{ contentClass }}">
     <div class="card h-100">
       <div class="card-body">
         <div class="row justify-content-center">
@@ -129,6 +110,27 @@
       </div>
     </div>
   </div>
+
+  {% if not app.user and app.request.attributes.get('_route') == 'admin_login' %}
+    <div class="col-sm-12 col-md-10 col-xl-10 mt-3">
+      <div class="card h-100">
+        <div class="card-body">
+          <h4 class="card-title">{{ 'login.login'|trans }}
+            <i class="fa fa-info-circle" aria-hidden="true"
+               data-toggle="tooltip" data-placement="top" title="{{ 'login.login-text'|trans }}"></i>
+          </h4>
+          {% from '_layout/flashbags.html.twig' import flashbag_alert %}
+
+          {% for flash_message in app.session.flashbag.get('authError') %}
+            {{ flashbag_alert('danger', flash_message, 'fa-exclamation-triangle', false) }}
+          {% endfor %}
+          {{ form(loginForm, {attr: {target: '_parent'}}) }}
+        </div>
+      </div>
+    </div>
+  {% endif %}
+
+
   </div>
 
   <div class="row w-60 m-auto justify-content-center">
