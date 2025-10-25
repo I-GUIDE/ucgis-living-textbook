@@ -486,6 +486,7 @@ login:
   username: 'Username'
 
 menu:
+  brand: Body of Knowledge
   abbreviations: 'Definitions'
   admin: 'Administrators'
   analytics-dashboard: 'Analytics dashboard'
