@@ -15,7 +15,7 @@
       <h1>
         {{ 'app.welcome' | trans }}
       </h1>
-      <h1>{{ 'menu.brand'|trans }} (BoK)</h1>
+      <h1>Body of Knowledge (BoK)</h1>
     </div>
 
   </div>
@@ -28,136 +28,37 @@
 
   {% from '_macro/_studyarea_select.html.twig' import select2_optgroup_css as select2_optgroup_css %}
   {{ select2_optgroup_css() }}
+
 {% endblock %}
 
 {% block extra_card_class %}mt-5 mb-1{% endblock %}
 
 {% block license %}
   <span class="small">
-  The contents of this website is licensed under a
-  <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode" target="_blank">
-    Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
-  </a> license.
-  <br/>
-  The software and content of this website were developed by the
-  <a href="https://www.itc.nl" target="_blank">Faculty ITC</a>
+    This Living Textbook software was developed by the <a href="https://www.itc.nl" target="_blank">Faculty ITC</a>
   from the
-  <a href="https://www.utwente.nl" target="_blank">University of Twente</a>.
+  <a href="https://www.utwente.nl" target="_blank">University of Twente, Neterlands</a>.
+    <br>It is licensed under a
+    <a href="https://creativecommons.org/licenses/by-nc-nd/4.0/legalcode" target="_blank">
+    Creative Commons Attribution-NonCommercial-NoDerivatives 4.0 International
+   License.</a>
   <br/>
     {% if not app.user %}
-      <a href="/admin">Login</a>
+      <a href="/admin">Admin Login</a>
       {% else %}
-      <a href="/logout">Logout</a>
+      <a href="/logout">Admin Logout</a>
     {% endif %}
   </span>
 {% endblock %}
 
-
-
 {% block content %}
 
-
-  <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
-    <div class="col-sm-12 col-md-10 col-xl-10 mt-3">
-      {% embed 'search/search_form.html.twig' with {search_path: path('_home') ~ '/search'} %}
-        {% block search_form_input_group_prepend %}
-          <div class="input-group-prepend d-none d-md-block">
-            <span class="input-group-text">Search BoK</span>
-          </div>
-        {% endblock %}
-
-        {% block searc_form_input_group_append %}
-          <div class="input-group-append">
-            <button class="btn btn-secondary" type="submit">
-              <i class="fa fa-search"></i>
-            </button>
-          </div>
-        {% endblock %}
-
-      {% endembed %}
-    </div>
-  </div>
-
-  {% set hasStudyArea = studyAreaCount > 0 %}
-
-  {% if hasStudyArea %}
-    <div class="row justify-content-center m-3 mt-5 mb-5 text-center">
-    <div class="col-12 col-lg-6 mb-3 mb-lg-0">
-    <div class="card h-100">
-    <div class="card-body">
-    <h4>{{ 'dashboard.study-area-open-access'|trans }}</h4>
-  {% if studyAreaForm is not null %}
-  {% if not app.user %}
-    <span>{{ 'dashboard.study-area-open-access-multiple'|trans }}</span>
-  {% endif %}
-    {{ form_start(studyAreaForm) }}
-    <div class="d-flex flex-row flex-wrap flex-md-no-wrap">
-      <div class="mt-1 mw-md-100 flex-grow-1">
-        {{ form_widget(studyAreaForm.studyArea) }}
-      </div>
-      <div class="mt-1 ml-auto ml-md-1">
-        {{ form_widget(studyAreaForm.submit) }}
-      </div>
-    </div>
-    <script type="text/javascript">
-      $('#studyarea_form_studyArea').on('change', function () {
-        $('#studyarea_form_submit').removeAttr('disabled');
-      });
-
-      $('#studyarea_form_submit').on('click', function () {
-        window.location.href = Routing.generate('_home', {'_studyArea': $('#studyarea_form_studyArea').val()}, false);
-        return false;
-      });
-    </script>
-    {{ form_end(studyAreaForm) }}
-  {% else %}
-    {#    <p>{{ 'dashboard.study-area-open-access-single'|trans({'%name%': singleStudyArea.name}) }}</p> #}
-    <p>{{ singleStudyArea.name }}</p>
-    <a href="{{ path('_home') }}" class="btn btn-outline-primary">{{ 'dashboard.open'|trans }}</a>
-  {% endif %}
-
-  {% endif %}
-  </div>
-  </div>
-  </div>
-  {% set contentClass = hasStudyArea ? 'col-12 col-lg-6' : 'col-sm-12 col-md-10 col-xl-8' %}
-  <div class="{{ contentClass }}">
-    <div class="card h-100">
-      <div class="card-body">
-        <div class="row justify-content-center">
-          <p>Tutorial for Using this Living Textbook Platform</p>
-        </div>
-        <div class="row justify-content-center">
-          <p>Editors, Contributors, and Reviewers</p>
-        </div>
-        <div class="row justify-content-center">
-          Color-coded, 2-page list of Topics (pdf)
-        </div>
-      </div>
-    </div>
-  </div>
-
   {% if not app.user and app.request.attributes.get('_route') == 'admin_login' %}
-    <div class="col-sm-12 col-md-10 col-xl-10 mt-3">
-      <div class="card h-100">
-        <div class="card-body">
-          <h4 class="card-title">{{ 'login.login'|trans }}
-            <i class="fa fa-info-circle" aria-hidden="true"
-               data-toggle="tooltip" data-placement="top" title="{{ 'login.login-text'|trans }}"></i>
-          </h4>
-          {% from '_layout/flashbags.html.twig' import flashbag_alert %}
-
-          {% for flash_message in app.session.flashbag.get('authError') %}
-            {{ flashbag_alert('danger', flash_message, 'fa-exclamation-triangle', false) }}
-          {% endfor %}
-          {{ form(loginForm, {attr: {target: '_parent'}}) }}
-        </div>
-      </div>
-    </div>
+    {{ include('default/_admin_login.html.twig') }}
+  {% else %}
+    {{ include('default/_search.html.twig') }}
+    {{ include('default/_default.html.twig') }}
   {% endif %}
-
-
-  </div>
 
   <div class="row w-60 m-auto justify-content-center">
     <div class="license-notice">
@@ -165,7 +66,6 @@
       <p>
         {{ block('license') }}
       </p>
-
       <div class="creative-commons-license"></div>
     </div>
   </div>
@@ -176,7 +76,7 @@
   {% endblock %}
 
   {% block javascripts_bottom %}
-    {{ parent() }}
+    {{ parent(singleStudyArea) }}
     <script type="text/javascript">
       // Focus form input
       function focusLoginForm() {
