@@ -1,5 +1,6 @@
 @import '~bootstrap/scss/_functions.scss';
 @import '~bootstrap/scss/_variables.scss';
+@import '../vars/vars';
 
 .license-notice {
   margin-top: $spacer;
@@ -37,6 +38,47 @@ h1 {
 .logo {
   width: 100px;
   height: auto;
+}
+
+.ucgis-orange-input-group {
+  color: #000;
+  background-color: lighten($ucgis-orange, 20%);
+}
+
+.ucgis-primary-btn {
+  background-color: $ucgis-blue;
+  color: #fff;
+}
+
+.ucgis-primary-btn:hover, .ucgis-primary-btn:focus {
+  background-color: darken($ucgis-blue, 10%);
+  color: #fff;
+}
+
+.ucgis-green-outline-btn {
+  border-color: #39b299;
+}
+
+.ucgis-green-outline-btn:hover, .ucgis-green-outline-btn:focus {
+  background-color: #299279;
+  color: #fff;
+}
+
+.ucgis-yellow-outline-btn {
+  border-color: #ffcb39;
+}
+
+.ucgis-yellow-outline-btn:hover, .ucgis-yellow-outline-btn:focus {
+  background-color: #ffcb39;
+}
+
+.ucgis-blue-outline-btn {
+  border-color: #2b4e56;
+}
+
+.ucgis-blue-outline-btn:hover, .ucgis-blue-outline-btn:focus {
+  background-color: #2b4e56;
+  color: #fff;
 }
 
 /* Small phones and up */
