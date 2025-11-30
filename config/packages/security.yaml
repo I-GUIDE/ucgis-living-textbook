@@ -22,11 +22,11 @@ security:
         - App\Api\Security\ApiAuthenticator
     main:
       pattern: ^/
-      entry_point: oidc
-      oidc:
-        login_path: app_default_landing
-        success_handler: App\Security\Http\Authentication\AuthenticationSuccessHandler
-        user_identifier_property: email
+#      entry_point: oidc
+#      oidc:
+#        login_path: app_default_landing
+#        success_handler: App\Security\Http\Authentication\AuthenticationSuccessHandler
+#        user_identifier_property: email
       form_login:
         login_path: admin_login
         success_handler: App\Security\Http\Authentication\AuthenticationSuccessHandler
