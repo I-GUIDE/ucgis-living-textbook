@@ -151,10 +151,10 @@ class DefaultController extends AbstractController
     }
 
     // Retrieve available study areas (not authenticated users can have them as well!)
-    if ($user) {
+    if ($user && $user->isAdmin()) {
       $studyAreas = $studyAreaRepository->getVisible($user);
     } else {
-      $studyAreas = [$studyAreaRepository->getFirstVisible($user)];
+      $studyAreas = [$studyAreaRepository->findLatestPublicOpenAccess($user)];
     }
 
     // Only show select form when there is more than 1 visible study area

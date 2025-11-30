@@ -44,6 +44,17 @@ class StudyAreaRepository extends ServiceEntityRepository
     return $this->getVisibleQueryBuilder($user)->getQuery()->getResult();
   }
 
+  public function findLatestPublicOpenAccess(?User $user): ?StudyArea
+  {
+    return $this->getVisibleQueryBuilder($user)
+      ->andWhere('sa.accessType = :public')
+      ->andWhere('sa.openAccess = :openAccess')
+      ->setParameter('public', StudyArea::ACCESS_PUBLIC)
+      ->setParameter('openAccess', true)
+      ->setMaxResults(1)
+      ->getQuery()->getOneOrNullResult();
+  }
+
   /**
    * Retrieve the first visible study area for the user.
    *
