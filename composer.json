@@ -90,6 +90,7 @@
         "twig/extra-bundle": "3.22.1",
         "twig/inky-extra": "3.22.0",
         "twig/intl-extra": "3.22.1",
+        "twig/string-extra": "^3.22",
         "twig/twig": "3.22.0",
         "zircote/swagger-php": "5.7.3"
     },

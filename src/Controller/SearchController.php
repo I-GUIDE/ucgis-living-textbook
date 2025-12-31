@@ -66,12 +66,12 @@ class SearchController extends AbstractController
 
     // We just retrieve all data, to filter them locally on the content.
     $result['conceptData']          = $this->searchData($conceptRepository->findForStudyAreaOrderedByName($studyArea, true, true), $search);
-    $result['instanceData']         = $this->searchData($conceptRepository->findForStudyAreaOrderedByName($studyArea, true, false, true), $search);
-    $result['abbreviationData']     = $this->searchData($abbreviationRepository->findForStudyArea($studyArea), $search);
-    $result['externalResourceData'] = $this->searchData($externalResourceRepository->findForStudyArea($studyArea), $search);
-    $result['learningOutcomeData']  = $this->searchData($learningOutcomeRepository->findForStudyArea($studyArea), $search);
-    $result['ownAnnotationsData'] = [];
-    $result['allAnnotationsData'] = [];
+//    $result['instanceData']         = $this->searchData($conceptRepository->findForStudyAreaOrderedByName($studyArea, true, false, true), $search);
+//    $result['abbreviationData']     = $this->searchData($abbreviationRepository->findForStudyArea($studyArea), $search);
+//    $result['externalResourceData'] = $this->searchData($externalResourceRepository->findForStudyArea($studyArea), $search);
+//    $result['learningOutcomeData']  = $this->searchData($learningOutcomeRepository->findForStudyArea($studyArea), $search);
+//    $result['ownAnnotationsData'] = [];
+//    $result['allAnnotationsData'] = [];
 
     // Retrieve annotation data, which is easier to do here
     $user = $this->getUser();

@@ -80,7 +80,6 @@
 {#      </li>#}
 {#    {% endif %}#}
 {#  </ul>#}
-
   <div class="tab-content" id="search-options">
     <div class="tab-pane{% if conceptData|length != 0 %} active{% endif %}" id="tab-concepts" role="tabpanel"
          aria-labelledby="tab-concepts-button">
@@ -92,7 +91,7 @@
             <thead>
             <tr>
               <th>{{ 'concept.name'|trans }}</th>
-              <th>{{ 'search.found-in'|trans }}</th>
+{#              <th>{{ 'search.found-in'|trans }}</th>#}
               <th>{{ 'search.preview'|trans }}</th>
             </tr>
             </thead>
@@ -100,14 +99,14 @@
             {% for concept in conceptData %}
               {% for result in concept.results %}
                 <tr>
-                  {% if loop.first %}
-                    <td rowspan="{{ concept.results|length }}">
+                  {% if result.property == 'theory-explanation' %}
+                    <td>
                       <a href="{{ path('app_concept_show', {concept: concept._id}) }}">{{ concept._title }}</a>
                     </td>
-                  {% endif %}
-                  <td>{{ ('concept.' ~ result.property)|trans }}</td>
-                  <td>{{ result.data|striptags|highlight(search) }}</td>
+{#                  <td>{{ ('concept.' ~ result.property)|trans }}</td>#}
+                  <td>{{ result.data|striptags|u.truncate(500, '...', false)|raw }}</td>
                 </tr>
+            {% endif %}
               {% endfor %}
             {% endfor %}
             </tbody>
