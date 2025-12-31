@@ -107,7 +107,7 @@ class RequestStudyAreaSubscriber implements EventSubscriberInterface
         assert($user === null || $user instanceof User);
 
         // Try to find a visible study area
-        if (null !== ($studyArea = $this->studyAreaRepository->getFirstVisible($user))) {
+        if (null !== ($studyArea = $this->studyAreaRepository->findLatestPublicOpenAccess($user))) {
           assert($studyArea instanceof StudyArea);
           $studyAreaId     = $studyArea->getId();
           $this->studyArea = $studyArea;

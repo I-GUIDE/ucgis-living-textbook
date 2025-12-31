@@ -1,40 +1,101 @@
 @import '~bootstrap/scss/_functions.scss';
 @import '~bootstrap/scss/_variables.scss';
+@import '../vars/vars';
 
 .license-notice {
   margin-top: $spacer;
   display: flex;
+
+  p {
+    text-align: center;
+  }
 
   > .license-image {
     flex-shrink: 0;
     flex-grow: 0;
     margin-top: $spacer * 0.5;
     height: 2rem;
+    width: 3rem;
+    background: url('../../img/footer/ltb-icon.svg') no-repeat bottom left;
+    background-size: contain;
+  }
+
+  > .creative-commons-license {
+    flex-shrink: 0;
+    flex-grow: 0;
+    margin-top: $spacer * 0.5;
+    height: 2rem;
     width: 6.5rem;
-    background: url('../../img/footer/license.svg') no-repeat bottom left;
+    background: url('../../img/footer/license.svg') no-repeat bottom right;
     background-size: contain;
   }
 }
 
-.landing-page {
-  background: none;
+h1 {
+  font-size: 1rem;
+}
 
-  &::after {
-    content: '';
-    background: url('../../img/icon/LTB_Logo_V4.svg') no-repeat top right;
-    background-size: contain;
-    background-origin: content-box;
-    opacity: 0.1;
-    top: $spacer;
-    left: $spacer;
-    bottom: $spacer;
-    right: $spacer;
-    position: absolute;
+.logo {
+  width: 100px;
+  height: auto;
+}
 
-    pointer-events: none;
-    -webkit-user-select: none; /* Chrome all / Safari all */
-    -moz-user-select: none; /* Firefox all */
-    -ms-user-select: none; /* IE 10+ */
-    user-select: none; /* Likely future */
+.ucgis-orange-input-group {
+  color: #000;
+  background-color: lighten($ucgis-orange, 20%);
+}
+
+.ucgis-primary-btn {
+  background-color: $ucgis-blue;
+  color: #fff;
+}
+
+.ucgis-primary-btn:hover, .ucgis-primary-btn:focus {
+  background-color: darken($ucgis-blue, 10%);
+  color: #fff;
+}
+
+.ucgis-green-outline-btn {
+  border-color: #39b299;
+}
+
+.ucgis-green-outline-btn:hover, .ucgis-green-outline-btn:focus {
+  background-color: #299279;
+  color: #fff;
+}
+
+.ucgis-yellow-outline-btn {
+  border-color: #ffcb39;
+}
+
+.ucgis-yellow-outline-btn:hover, .ucgis-yellow-outline-btn:focus {
+  background-color: #ffcb39;
+}
+
+.ucgis-blue-outline-btn {
+  border-color: #2b4e56;
+}
+
+.ucgis-blue-outline-btn:hover, .ucgis-blue-outline-btn:focus {
+  background-color: #2b4e56;
+  color: #fff;
+}
+
+/* Small phones and up */
+@media (min-width: 481px) {
+  h1 {
+    font-size: 1.25rem;
   }
 }
+
+/* Tablets and up */
+@media (min-width: 769px) {
+  h1 {
+    font-size: 1.75rem;
+  }
+  .logo {
+    width: 125px;
+  }
+}
+
+

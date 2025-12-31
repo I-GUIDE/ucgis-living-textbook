@@ -44,6 +44,17 @@ class StudyAreaRepository extends ServiceEntityRepository
     return $this->getVisibleQueryBuilder($user)->getQuery()->getResult();
   }
 
+  public function findLatestPublicOpenAccess(?User $user): ?StudyArea
+  {
+    return $this->getVisibleQueryBuilder($user)
+      ->andWhere('sa.accessType = :public')
+      ->andWhere('sa.openAccess = :openAccess')
+      ->setParameter('public', StudyArea::ACCESS_PUBLIC)
+      ->setParameter('openAccess', true)
+      ->setMaxResults(1)
+      ->getQuery()->getOneOrNullResult();
+  }
+
   /**
    * Retrieve the first visible study area for the user.
    *
@@ -73,6 +84,7 @@ class StudyAreaRepository extends ServiceEntityRepository
         // https://stackoverflow.com/questions/12652034/how-can-i-order-by-null-in-dql
       ->addSelect('CASE WHEN g.name IS NULL THEN 1 ELSE 0 END HIDDEN _isFieldNull')
       ->orderBy('_isFieldNull', 'ASC')
+      ->addOrderBy('sa.createdAt', 'DESC')
       ->addOrderBy('g.name', 'ASC')
       ->addOrderBy('sa.name', 'ASC');
 

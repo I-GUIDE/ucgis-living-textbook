@@ -1,27 +1,34 @@
-{% set id = random() %}
-<script type="text/javascript">
-  function doSearch_{{ id }}(e) {
-    e.preventDefault();
-    var path = '{{ path('search') }}/' + $('#search_{{ id }}').val();
-    if (inDoubleColumn) {
-      eDispatch.pageLoad(path);
-    } else {
-      window.location.href = path;
-    }
-    return false;
-  }
-</script>
-<form name="search_form" class="ignore-submit" onsubmit="return doSearch_{{ id }}(event)">
-  <div class="form-group">
-    <input type="text" id="search_{{ id }}" required="required" value="{{ search|default('') }}"
-           placeholder="{{ 'search.placeholder'|trans }}" class="form-control">
+{% block search_form %}
+  {% set id = random() %}
+  {% set search_path = search_path|default(path('search')) %}
 
-    {% if error|default(false) %}
-      <div class="invalid-feedback">
-        <ul class="list-unstyled mb-0">
-          <li><i class="fa fa-exclamation-circle"></i> {{ error }}</li>
-        </ul>
+  <script type="text/javascript">
+    function doSearch_{{ id }}(e) {
+      e.preventDefault();
+      var path = '{{ search_path }}/' + $('#search_{{ id }}').val();
+      if (inDoubleColumn) {
+        eDispatch.pageLoad(path);
+      } else {
+        window.location.href = path;
+      }
+      return false;
+    }
+  </script>
+  <form name="search_form" class="ignore-submit" onsubmit="return doSearch_{{ id }}(event)">
+    <div class="form-group">
+      <div class="input-group">
+        {% block search_form_input_group_prepend %}{% endblock %}
+      <input type="text" id="search_{{ id }}" required="required" value="{{ search|default('') }}"
+             placeholder="{{ 'search.placeholder'|trans }}" class="form-control">
+        {% block searc_form_input_group_append %} {% endblock %}
       </div>
-    {% endif %}
-  </div>
-</form>
+      {% if error|default(false) %}
+        <div class="invalid-feedback">
+          <ul class="list-unstyled mb-0">
+            <li><i class="fa fa-exclamation-circle"></i> {{ error }}</li>
+          </ul>
+        </div>
+      {% endif %}
+    </div>
+  </form>
+{% endblock %}

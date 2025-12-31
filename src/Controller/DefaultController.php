@@ -116,6 +116,7 @@ class DefaultController extends AbstractController
 
   #[Route('/', options: ['no_login_wrap' => true])]
   #[Route('', name: 'base_url', options: ['no_login_wrap' => true])]
+  #[Route('/admin', name: 'admin_login', options: ['no_login_wrap' => true])]
   #[IsGranted(AuthenticatedVoter::PUBLIC_ACCESS)]
   public function landing(
     Request $request, FormFactoryInterface $formFactory, TranslatorInterface $translator,
@@ -150,7 +151,11 @@ class DefaultController extends AbstractController
     }
 
     // Retrieve available study areas (not authenticated users can have them as well!)
-    $studyAreas = $studyAreaRepository->getVisible($user);
+    if ($user && $user->isAdmin()) {
+      $studyAreas = $studyAreaRepository->getVisible($user);
+    } else {
+      $studyAreas = [$studyAreaRepository->findLatestPublicOpenAccess($user)];
+    }
 
     // Only show select form when there is more than 1 visible study area
     $studyAreaCount = count($studyAreas);
