@@ -16,7 +16,7 @@ parameters:
   router.request_context.scheme: '%env(HTTP_SCHEMA)%'
 
   bobv.latex.pdflatex.location: "/usr/bin/pdflatex"
-
+  bobv.latex.error_image: "%kernel.project_dir%/public/img/latex/error.jpg"
   study_area_slug: current
 
 services:
@@ -30,7 +30,7 @@ services:
   App\:
     resource: '../src/'
     exclude:
-      - '../src/{ConceptPrint,Entity,EntityHandler,Tests}/'
+      - '../src/{Entity,EntityHandler,Tests}/'
       - '../src/Kernel.php'
   # controllers are imported separately to make sure services can be injected
   # as action arguments even if you don't extend any base controller class
@@ -43,10 +43,6 @@ services:
 
   # add more service definitions when explicit configuration is needed
   # please note that last definitions always *replace* previous ones
-
-  # Include the class used to resolve images when printing concepts;
-  # The ConceptPrint directory is excluded from autoconfigure and autowire
-  App\ConceptPrint\ImageResolver:
 
   # Overwrite for JMS serializer to always use the identical names
   jms_serializer.naming_strategy:
