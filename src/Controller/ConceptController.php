@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Attribute\DenyOnFrozenStudyArea;
+use App\ConceptPrint\RateLimitedConceptPrinter;
 use App\Entity\Concept;
 use App\Entity\ConceptRelation;
 use App\Entity\PendingChange;
@@ -467,6 +468,7 @@ class ConceptController extends AbstractController
   public function show(
     #[MapEntity(expr: 'repository.findOneByIdOrSlug(_studyArea, concept)')] Concept $concept,
     RequestStudyArea $requestStudyArea,
+    RateLimitedConceptPrinter $generator,
     LearningPathRepository $learningPathRepository): Response
   {
     // Check study area
@@ -476,6 +478,7 @@ class ConceptController extends AbstractController
 
     return $this->render('concept/show.html.twig', [
       'concept'       => $concept,
+      'is_cached' => $generator->has($concept),
       'learningPaths' => $learningPathRepository->findForConcept($concept),
     ]);
   }

@@ -4,17 +4,22 @@ namespace App\ConceptPrint;
 
 use App\Entity\Concept;
 use Mpdf\Mpdf;
-use Psr\Cache\InvalidArgumentException;
+use Mpdf\MpdfException;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
-use Symfony\Contracts\Cache\CacheInterface;
-use Symfony\Contracts\Cache\ItemInterface;
 use Twig\Environment;
+use Twig\Error\LoaderError;
+use Twig\Error\RuntimeError;
+use Twig\Error\SyntaxError;
+use RuntimeException;
 
+/**
+ * This class generates PDF documents for Concept objects using the Mpdf library.
+ * Implements the ConceptPdfGeneratorInterface for creating PDF output from provided data.
+ */
 readonly class MpdfConceptGenerator implements ConceptPdfGeneratorInterface
 {
 
   public function __construct(
-    private CacheInterface $cache,
     private Environment $twig,
     #[Autowire('%kernel.project_dir%')] private string $projectDir,
     #[Autowire('%kernel.cache_dir%')] private string $cacheDir,
@@ -23,13 +28,15 @@ readonly class MpdfConceptGenerator implements ConceptPdfGeneratorInterface
   }
 
   /**
-   * @throws InvalidArgumentException
+   * Create a PDF document for the given Concept object.
+   *
+   * @param Concept $concept
+   *
+   * @return string
    */
   public function create(Concept $concept): string
   {
-    $key         = 'concept_pdf_' . $concept->getId();
-    return $this->cache->get($key, function (ItemInterface $item) use ($concept) {
-      $item->expiresAfter(7776000);
+    try {
       $projectDir = $this->projectDir . '/public';
       $pdf        = new Mpdf([
         'anchor2Bookmark' => true,
@@ -37,7 +44,7 @@ readonly class MpdfConceptGenerator implements ConceptPdfGeneratorInterface
         'margin_bottom'   => 25,
         'margin_header'   => 5,
         'margin_footer'   => 10,
-        'tempDir'         => $this->cacheDir
+        'tempDir'         => $this->cacheDir,
       ]);
       $pdf->SetSubject($concept->getName());
       $keywords = implode(', ', $concept->getTags()->map(static fn ($tag) => $tag->getName())->toArray());
@@ -45,10 +52,13 @@ readonly class MpdfConceptGenerator implements ConceptPdfGeneratorInterface
       $pdf->WriteHTML($this->twig->render('concept_print/concept.html.twig', [
         'keywords'   => $keywords,
         'concept'    => $concept,
-        'projectDir' => $projectDir
+        'projectDir' => $projectDir,
       ]));
       $outfile = $concept->getSlug() . '.pdf';
+
       return $pdf->Output($outfile, 'S');
-    });
+    } catch (MpdfException|SyntaxError|RuntimeError|LoaderError $e) {
+      throw new RuntimeException($e->getMessage(), previous: $e);
+    }
   }
 }
