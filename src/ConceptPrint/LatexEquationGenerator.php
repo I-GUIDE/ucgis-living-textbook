@@ -10,6 +10,7 @@ use Exception;
 use Psr\Cache\InvalidArgumentException;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\DependencyInjection\Attribute\Autowire;
+use Symfony\Component\DependencyInjection\Attribute\Target;
 use Symfony\Component\HttpFoundation\RequestStack;
 use Symfony\Component\HttpKernel\Exception\TooManyRequestsHttpException;
 use Symfony\Component\RateLimiter\Exception\RateLimitExceededException;
@@ -27,7 +28,7 @@ readonly class LatexEquationGenerator
     private Security $security,
     private RequestStack $requestStack,
     private CacheInterface $cache,
-    private RateLimiterFactory $latexGeneratorLimiter,
+    #[Target('latex_generator.limiter')] private RateLimiterFactory $latexGeneratorLimiter,
     private LatexGeneratorInterface $generator,
     #[Autowire('%bobv.latex.error_image%')] private string $errorImageSrc,
   )
