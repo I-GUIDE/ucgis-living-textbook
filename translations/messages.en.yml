@@ -511,6 +511,7 @@ menu:
   learning-paths: 'Learning paths'
   permissions: 'Permissions'
   print: 'Print'
+  clear-cache: 'Clear Cached'
   relation-type: 'Relation types'
   review: 'Review'
   review-publish: 'Publish'

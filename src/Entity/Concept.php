@@ -25,6 +25,7 @@ use App\Validator\Constraint\ConceptRelation as ConceptRelationValidator;
 use ArrayIterator;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Exception\ORMException;
 use Doctrine\ORM\Mapping as ORM;
@@ -42,7 +43,6 @@ use function count;
 use function iterator_to_array;
 use function strcasecmp;
 use function stripos;
-use function Symfony\Component\String\u;
 
 #[ORM\Entity(repositoryClass: ConceptRepository::class)]
 #[ORM\HasLifecycleCallbacks]
@@ -658,7 +658,7 @@ class Concept implements SearchableInterface, ReviewableInterface, IdInterface
 
   public function setSlug(string $slug): self
   {
-    $this->slug = u($slug)->upper();
+    $this->slug = $slug;
 
     return $this;
   }

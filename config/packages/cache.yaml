@@ -15,5 +15,7 @@ framework:
         #app: cache.adapter.apcu
 
         # Namespaced pools use the above "app" backend by default
-        #pools:
-            #my.dedicated.cache: null
+        pools:
+          concept_print.cache:
+            adapter: cache.adapter.filesystem
+            default_lifetime: 604800 # 1 week

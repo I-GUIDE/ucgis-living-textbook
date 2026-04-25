@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>UCGIS GIS&T BoK | {{ concept.name }}</title>
+  <style>
+
+    @page {
+      header: html_conceptHeader;
+      footer: html_conceptFooter;
+    }
+
+    /* 2. Override the first page to have NO header */
+    @page :first {
+      header: _blank;
+    }
+
+    .apa-reference {
+      /* The core APA requirement: Hanging Indent */
+      padding-left: 36pt;
+      text-indent: -36pt;
+
+      /* Standard APA Spacing */
+      line-height: 1.5; /* APA requires double-spacing */
+      margin-bottom: 10pt; /* Space between different citations */
+      text-align: left;
+    }
+
+    .latex-image {
+    }
+
+    html, body {
+      font-family: 'DejaVu Sans', sans-serif;
+      font-size: 11pt;
+    }
+
+    h1 {
+      font-size: 18pt;
+    }
+
+    h2 {
+      font-size: 14pt;
+    }
+
+    table {
+      font-size: 9pt;
+      border-collapse: collapse;
+      border: 1px solid #000;
+    }
+
+    td, th {
+      border: 1px solid #000;
+      padding: 0.25rem;
+    }
+
+  </style>
+</head>
+<body>
+<htmlpageheader name="conceptHeader">
+  <table style="width:100%;border: none; border-bottom: 1px solid #000;font-size: 9pt;">
+    <tr>
+      <td style="text-align: right;border:none;">{{ concept.name }}</td>
+    </tr>
+  </table>
+</htmlpageheader>
+
+<htmlpagefooter name="conceptFooter">
+  <table style="width:100%;border:none;border-top: 1px solid #000;font-size: 9pt;">
+    <tr>
+      <td style="vertical-align: middle;height: 24px; line-height: 24px;border:none;">
+        <img src="{{ projectDir ~ '/ucgis.png' }}" alt="UCGIS" style="vertical-align: middle; display: inline-block;">
+        <strong>UCGIS GIS&amp;T Body of Knowledge</strong>
+        | <em><a href="https://www.ucgis.org">www.ucgis.org </a></em>
+      </td>
+      <td style="text-align: right; vertical-align: middle;height: 24px; line-height: 24px; border:none;">
+        Page {PAGENO} of {nbpg}
+      </td>
+    </tr>
+  </table>
+</htmlpagefooter>
+
+<h1>{{ concept.name }}</h1>
+{% set definition = concept.definition.text %}
+
+{% if definition %}
+  <h2>Abstract</h2>
+  {{ fixLatexUrls(definition) }}
+{% endif %}
+
+{% if keywords %}
+  <p><em>Keywords</em>: {{ keywords }}</p>
+{% endif %}
+
+{% set introduction = concept.introduction.text %}
+{% if introduction %}
+  <h2>Author & citation</h2>
+  {{ fixLatexUrls(introduction) }}
+{% endif %}
+
+{% set explanation = concept.theoryExplanation.text %}
+{% if explanation %}
+  <h2>Explanation</h2>
+  {{ fixLatexUrls(explanation) }}
+{% endif %}
+
+{% if concept.externalResources is not empty %}
+  <h2>References</h2>
+  {% for resource in concept.externalResources %}
+    <div class="apa-reference">
+      {% if resource.broken %}
+        {{ resource.title }}
+      {% else %}
+        <a href="{{ resource.url }}" target="_blank">{{ resource.title }}</a>
+      {% endif %}
+    </div>
+  {% endfor %}
+{% endif %}
+
+</body>
+</html>
