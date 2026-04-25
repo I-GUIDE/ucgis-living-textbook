@@ -320,6 +320,7 @@ class StudyAreaDuplicator
       $newConcept
         ->setStudyArea($this->newStudyArea)
         ->setName($concept->getName())
+        ->setSlug($concept->getSlug())
         ->setInstance($concept->isInstance())
         ->setDefinition($newConcept->getDefinition()->setText($concept->getDefinition()->getText()))
         ->setSynonyms($concept->getSynonyms())

@@ -1,6 +1,6 @@
 {% block search_form %}
   {% set id = random() %}
-  {% set search_path = search_path|default(path('search', {'_studyArea': '%study_area_slug%'})) %}
+  {% set search_path = search_path|default(path('search', {'_studyArea': study_area_slug})) %}
 
   <script type="text/javascript">
     function doSearch_{{ id }}(e) {

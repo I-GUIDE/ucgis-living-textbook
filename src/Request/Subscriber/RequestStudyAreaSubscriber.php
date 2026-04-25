@@ -27,7 +27,7 @@ use function assert;
 use function count;
 use function is_array;
 use function is_object;
-use function Symfony\Component\String\b;
+use function Symfony\Component\String\u;
 
 /** Subscriber for KernelEvents related to controllers. */
 class RequestStudyAreaSubscriber implements EventSubscriberInterface
@@ -82,7 +82,7 @@ class RequestStudyAreaSubscriber implements EventSubscriberInterface
 
     // Retrieve study area id from route
     $studyAreaId = null === $user ? $this->studyAreaSlug : $request->attributes->get(self::STUDY_AREA_KEY, 'current');
-    if (b($this->studyAreaSlug)->folded()->equalsTo(b($studyAreaId)->folded())) {
+    if (u($this->studyAreaSlug)->upper()->equalsTo(u($studyAreaId)->upper())) {
       $this->studyArea = $this->studyAreaRepository->findLatestPublicOpenAccess();
       $this->studyAreaId = $studyAreaId;
       $this->router->getContext()->setParameter(self::STUDY_AREA_KEY, $this->studyAreaId);
@@ -188,7 +188,7 @@ class RequestStudyAreaSubscriber implements EventSubscriberInterface
 
     // Validate it is actually an API request, exclude study area list to allow checking which API enabled study areas are available to this token/user
     $requestAttributes = $event->getRequest()->attributes;
-    if (!b($requestAttributes->get('_controller'))->startsWith('App\\Api\\Controller\\')
+    if (!u($requestAttributes->get('_controller'))->startsWith('App\\Api\\Controller\\')
         || $requestAttributes->get('_route') === 'api_study_area_list') {
       return;
     }
