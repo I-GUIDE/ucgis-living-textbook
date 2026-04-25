@@ -13,9 +13,23 @@
   {{ _action_button(path('app_data_excelstatus'), 'fa-tasks', 'menu.excel-status', 'primary', true) }}
 {% endmacro %}
 
-{% macro print_button(url) %}
-  {% from _self import _action_button %}
-  {{ _action_button(url, 'fa-print', 'menu.print', 'primary', true) }}
+{% macro print_button(concept) %}
+  {% if is_granted('STUDYAREA_EDIT', concept.studyArea) %}
+  <div class="btn-group">
+    <button type="button" class="btn btn-primary dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+      <i class="fa fa-fw fa-print"></i> {{ 'menu.print'|trans }}
+    </button>
+    <div class="dropdown-menu">
+      <a class="dropdown-item" href="{{ path('app_print_printconcept', {concept: concept.slug}) }}" target="_blank"><i class="fa fa-fw fa-file-pdf-o"></i> Print to PDF</a>
+      <a class="dropdown-item" data-concept="{{ concept.slug }}" data-study-area="{{ concept.studyArea.id }}" href="#">
+        <i class="fa fa-fw fa-archive"></i> Clear Cached
+      </a>
+    </div>
+  </div>
+  {% else %}
+    {% from _self import _action_button %}
+    {{ _action_button(path('app_print_printconcept', {concept: concept.slug}), 'fa-print', 'menu.print', 'primary', true) }}
+  {% endif %}
 {% endmacro %}
 
 {% macro list_button(url) %}

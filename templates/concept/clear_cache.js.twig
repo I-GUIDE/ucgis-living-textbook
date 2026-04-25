@@ -1,0 +1,12 @@
+
+
+<script>
+  {% if is_granted('STUDYAREA_EDIT', studyArea ?? concept.studyArea) %}
+  document.querySelectorAll('a[data-concept]').forEach(element => element.addEventListener('click', evt => {
+    const concept = element.dataset.concept;
+    const _studyArea = element.dataset.studyArea;
+    const url = Routing.generate('app_print_clearcached', {_studyArea, concept});
+    fetch(url, {});
+  }));
+  {% endif %}
+</script>

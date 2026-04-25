@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Attribute\DenyOnFrozenStudyArea;
+use App\ConceptPrint\RateLimitedConceptPrinter;
 use App\Entity\Concept;
 use App\Entity\ConceptRelation;
 use App\Entity\PendingChange;
@@ -21,6 +22,7 @@ use App\Review\ReviewService;
 use App\Security\Voters\StudyAreaVoter;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bridge\Doctrine\Attribute\MapEntity;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -67,10 +69,10 @@ class ConceptController extends AbstractController
     if ($form->isSubmitted() && $form->isValid()) {
       $imageFile = $concept->getImageFile();
       if ($imageFile) {
-        $imageName = uniqid() . '.' . $imageFile->guessExtension();
+        $imageName = uniqid().'.'.$imageFile->guessExtension();
         $imageFile->move(
-          sprintf('%s/public/uploads/studyarea/%s', $this->getParameter('kernel.project_dir'), $studyArea->getId()),
-          $imageName,
+          sprintf('%s/public/uploads/studyarea/%s', $this->getParameter('kernel.project_dir'), $studyArea->getId()), 
+          $imageName
         );
         $concept->setImagePath(sprintf('/uploads/studyarea/%s/%s', $studyArea->getId(), $imageName));
       }
@@ -97,7 +99,7 @@ class ConceptController extends AbstractController
 
   #[Route(path: '/edit/{concept<\d+>}')]
   #[IsGranted(StudyAreaVoter::EDIT, subject: 'requestStudyArea')]
-  #[DenyOnFrozenStudyArea(route: 'app_concept_show', subject: 'requestStudyArea', routeParams: ['concept' => '{concept}'])]
+  #[DenyOnFrozenStudyArea(route: 'app_concept_show', routeParams: ['concept' => '{concept}'], subject: 'requestStudyArea')]
   public function edit(
     Request $request,
     RequestStudyArea $requestStudyArea,
@@ -143,10 +145,10 @@ class ConceptController extends AbstractController
     if ($form->isSubmitted() && $form->isValid()) {
       $imageFile = $concept->getImageFile();
       if ($imageFile) {
-        $imageName = uniqid() . '.' . $imageFile->guessExtension();
+        $imageName = uniqid().'.'.$imageFile->guessExtension();
         $imageFile->move(
-          sprintf('%s/public/uploads/studyarea/%s', $this->getParameter('kernel.project_dir'), $studyArea->getId()),
-          $imageName,
+          sprintf('%s/public/uploads/studyarea/%s', $this->getParameter('kernel.project_dir'), $studyArea->getId()), 
+          $imageName
         );
         $concept->setImagePath(sprintf('/uploads/studyarea/%s/%s', $studyArea->getId(), $imageName));
       }
@@ -188,7 +190,7 @@ class ConceptController extends AbstractController
 
     // Check study area
     if ($pendingChange->getStudyArea()->getId() != $studyArea->getId()
-      || $pendingChange->getChangeType() === PendingChange::CHANGE_TYPE_REMOVE) {
+        || $pendingChange->getChangeType() === PendingChange::CHANGE_TYPE_REMOVE) {
       throw $this->createNotFoundException();
     }
 
@@ -318,7 +320,7 @@ class ConceptController extends AbstractController
         ->addOutgoingRelation(
           new ConceptRelation()
             ->setRelationType($instanceRelationType)
-            ->setTarget($base),
+            ->setTarget($base)
         );
 
       $baseInstance = $createInstance($baseConcept);
@@ -336,7 +338,7 @@ class ConceptController extends AbstractController
         $baseInstance->addIncomingRelation(
           new ConceptRelation()
             ->setRelationType($incomingRelation->getRelationType())
-            ->setSource($instance),
+            ->setSource($instance)
         );
       }
       foreach ($baseConcept->getOutgoingRelations() as $outgoingRelation) {
@@ -351,7 +353,7 @@ class ConceptController extends AbstractController
         $baseInstance->addOutgoingRelation(
           new ConceptRelation()
             ->setRelationType($outgoingRelation->getRelationType())
-            ->setTarget($instance),
+            ->setTarget($instance)
         );
       }
 
@@ -380,8 +382,8 @@ class ConceptController extends AbstractController
 
     $concepts         = $repo->findForStudyAreaOrderedByName($studyArea, false, true);
     $annotationCounts = $user
-      ? $annotationRepository->getCountsForUserInStudyArea($user, $studyArea)
-      : null;
+        ? $annotationRepository->getCountsForUserInStudyArea($user, $studyArea)
+        : null;
 
     return $this->render('concept/list.html.twig', [
       'annotationCounts' => $annotationCounts,
@@ -403,8 +405,8 @@ class ConceptController extends AbstractController
 
     $concepts         = $repo->findForStudyAreaOrderedByName($studyArea, false, false, true);
     $annotationCounts = $user
-      ? $annotationRepository->getCountsForUserInStudyArea($user, $studyArea)
-      : null;
+        ? $annotationRepository->getCountsForUserInStudyArea($user, $studyArea)
+        : null;
 
     return $this->render('concept/list.html.twig', [
       'instances'        => true,
@@ -464,29 +466,19 @@ class ConceptController extends AbstractController
   #[Route('/{concept<\d+|(?i:(\w*)(-\w+)*)>}', options: ['expose' => true])]
   #[IsGranted(StudyAreaVoter::SHOW, subject: 'requestStudyArea')]
   public function show(
-    string|int $concept,
+    #[MapEntity(expr: 'repository.findOneByIdOrSlug(_studyArea, concept)')] Concept $concept,
     RequestStudyArea $requestStudyArea,
-    ConceptRepository $conceptRepository,
+    RateLimitedConceptPrinter $generator,
     LearningPathRepository $learningPathRepository): Response
   {
-
-    $user = $this->getUser();
-    if (null === $user && is_numeric($concept)) {
-      $concept = $conceptRepository->findEvenDeleted((int)$concept);
-      return $this->redirectToRoute(
-        'app_concept_show',
-        ['concept' => $concept->getSlug(), '_studyArea' => 'current'],
-        301
-      );
-    }
-
     // Check study area
-    if (null === ($concept = $conceptRepository->findOneBySlugOrId($requestStudyArea->getStudyArea(), $concept))) {
+    if ($concept->getStudyArea()->getId() != $requestStudyArea->getStudyArea()->getId()) {
       throw $this->createNotFoundException();
     }
 
     return $this->render('concept/show.html.twig', [
       'concept'       => $concept,
+      'is_cached' => $generator->has($concept),
       'learningPaths' => $learningPathRepository->findForConcept($concept),
     ]);
   }

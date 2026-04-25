@@ -93,6 +93,7 @@ class StudyAreaVoter extends Voter
     switch ($attribute) {
       case self::OWNER:
         return $subject->isOwner($user);
+      case self::PRINTER:
       case self::SHOW:
         return $subject->isVisible($user);
       case self::EDIT:
@@ -100,11 +101,9 @@ class StudyAreaVoter extends Voter
       case self::REVIEW:
         return $subject->isReviewable($user);
       case self::ANNOTATE:
-      case self::PRINTER:
         if (!$user) {
           return false;
         }
-
         return $subject->isVisible($user);
       case self::ANALYTICS:
         return $subject->canViewAnalytics($user);

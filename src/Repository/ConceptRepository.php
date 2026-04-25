@@ -5,7 +5,6 @@ namespace App\Repository;
 use App\Entity\Concept;
 use App\Entity\StudyArea;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-use Doctrine\ORM\Query\Filter\SQLFilter;
 use Doctrine\ORM\QueryBuilder;
 use Doctrine\Persistence\ManagerRegistry;
 use Drenso\Shared\Database\RepositoryTraits\FindIdsTrait;
@@ -24,32 +23,46 @@ class ConceptRepository extends ServiceEntityRepository
     parent::__construct($registry, Concept::class);
   }
 
-  public function findEvenDeleted(int $conceptId): ?Concept
+  public function findOneByIdOrSlug(string|int|StudyArea $studyArea, string $conceptId): ?Concept
   {
-    $filters = $this->getEntityManager()->getFilters();
-    $filters->disable('softdeleteable');
-    $concept = $this->find($conceptId);
-    $filters->enable('softdeleteable');
 
-    return $concept;
-  }
-
-  public function findOneBySlugOrId(StudyArea $studyArea, string|int $conceptId): ?Concept
-  {
     $qb = $this->createQueryBuilder('c')
-      ->where('c.studyArea = :studyArea')
-      ->setParameter('studyArea', $studyArea);
+      ->where('c.deletedAt IS NULL');
 
-    if (is_numeric($conceptId)) {
-      $qb->andWhere('c.id = :id')
-        ->setParameter('id', $conceptId);
+    if ($studyArea == $this->studyAreaSlug) {
+      $latestPublicStudyAreaSubQuery = $this->getEntityManager()->createQueryBuilder()
+        ->select('sa2')
+        ->from(StudyArea::class, 'sa2')
+        ->where('sa2.accessType = :publicAccessType')
+        ->andWhere('sa2.openAccess = true')
+        ->andWhere('sa2.deletedAt IS NULL')
+        ->orderBy('sa2.createdAt', 'DESC')
+        ->setMaxResults(1);
+
+
+      $qb->andWhere('c.studyArea = (' . $latestPublicStudyAreaSubQuery->getDQL() . ')')
+        ->setParameter('publicAccessType', 'public');
+
+
     } else {
-      $qb->andWhere('c.slug = UPPER(:slug)')
+      $qb->andWhere('c.studyArea = :studyArea')
+         ->setParameter('studyArea', is_numeric($studyArea) ? (int)$studyArea : $studyArea);
+    }
+
+
+
+    if (ctype_digit($conceptId)) {
+      $qb->andWhere('c.id = :id')
+        ->setParameter('id', (int)$conceptId);
+    } else {
+      $qb->andWhere('LOWER(c.slug) = LOWER(:slug)')
         ->setParameter('slug', $conceptId);
     }
 
-    return $qb->getQuery()
-      ->getOneOrNullResult();
+    /** @var Concept|null $concept */
+    $concept = $qb->getQuery()->getOneOrNullResult();
+
+    return $concept;
   }
 
   public function findForStudyAreaOrderByNameQb(
